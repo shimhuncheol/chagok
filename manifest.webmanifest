@@ -1,0 +1,16 @@
+{
+  "name": "차곡 · 선생님 할 일 정리",
+  "short_name": "차곡",
+  "description": "공문·메신저 글을 붙여넣으면 날짜별 할 일로 정리해 주는 선생님용 프로그램. 할 일은 내 브라우저에만 저장돼요.",
+  "lang": "ko",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#EAE8EE",
+  "theme_color": "#EC6F5A",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
