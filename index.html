@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>차곡 · 선생님 할 일 정리</title>
-<meta name="description" content="차곡 v1.3 — 공문·메신저 글을 붙여넣으면 날짜별 할 일로 정리해 주는 선생님용 프로그램. 인터넷·설치·API 없이 HTML 파일 하나로 동작합니다.">
+<meta name="description" content="차곡 v1.3.1 — 공문·메신저 글을 붙여넣으면 날짜별 할 일로 정리해 주는 선생님용 프로그램. 인터넷·설치·API 없이 HTML 파일 하나로 동작합니다.">
 <link rel="icon" id="favicon" href="">
 <meta name="theme-color" content="#EC6F5A">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1629,7 +1629,7 @@ function setLogoFromFile(file) {
   img.onerror = () => { URL.revokeObjectURL(url); toast('그림을 열지 못했어요.'); };
   img.src = url;
 }
-const APP_VERSION = '1.3';
+const APP_VERSION = '1.3.1';
 const HOME_URL = 'https://shimhuncheol.github.io/chagok/';
 const PAGE_TITLE = { input: '자료 넣기', review: '확인하기', todo: '할 일 보기', library: '자료함', school: '학교 정보', memo: '메모', backup: '백업·정리' };
 const TABS = ['input', 'review', 'todo', 'library', 'school', 'memo', 'backup'];
@@ -2199,12 +2199,14 @@ function renderInput() {
       <div class="grow"><label class="fl" for="pasteName">자료 이름 (비워 두면 첫 줄로 정해요)</label><input class="inp" id="pasteName" placeholder="예: 11월 교직원 회의 안내" value="${esc(UI.draft.name)}"></div>
       <div style="width:200px"><label class="fl">기준 날짜</label>${dateBtn({ field: 'ref', value: UI.refDate })}</div>
     </div>
-    <textarea class="inp" id="pasteText" placeholder="여기를 누르고 Ctrl+V (맥은 ⌘+V)&#10;&#10;예)&#10;- 11월 20일(목)까지 연수 신청서 제출&#10;- 다음 주 화요일 15:00 학년 협의회&#10;- 학부모 상담 주간: 11. 24.~11. 28.">${esc(UI.draft.text.trim() ? UI.draft.text : '')}</textarea>
+    <textarea class="inp" id="pasteText" placeholder="${S.settings.clickPaste === false ? '여기를 누르고 Ctrl+V (맥은 ⌘+V)' : '공문·메신저 글을 복사(Ctrl+C)한 뒤 여기를 한 번 누르세요. 자동으로 붙여넣어져요'}&#10;&#10;예)&#10;- 11월 20일(목)까지 연수 신청서 제출&#10;- 다음 주 화요일 15:00 학년 협의회&#10;- 학부모 상담 주간: 11. 24.~11. 28.">${esc(UI.draft.text.trim() ? UI.draft.text : '')}</textarea>
     <div class="row" style="margin-top:12px">
-      <button class="btn line" data-action="clip-read" data-target="pasteText">📋 클립보드에서 가져오기</button>
+      <button class="btn pri" data-action="clip-read" data-target="pasteText">👆 한 번 눌러 붙여넣기</button>
       <button class="btn ghost sm" data-action="paste-clear">지우기</button>
       <span class="sp"></span>
-      <span class="muted small hide-m">💡 '내일', '다음 주 금요일'은 기준 날짜로 계산해요</span>
+      <label class="switch" title="빈 칸을 누르면 복사해 둔 글을 바로 붙여넣어요"><input type="checkbox" data-action="click-paste" ${S.settings.clickPaste === false ? '' : 'checked'}><span class="sl"></span><span class="sw-t small">빈 칸을 누르면 바로 붙여넣기</span></label>
+    </div>
+    <div class="muted small hide-m" style="margin-top:6px">💡 처음 한 번은 브라우저가 "클립보드 보기 허용"을 물어봐요. <b>허용</b>을 누르면 그다음부터는 바로 붙여져요. '내일', '다음 주 금요일'은 기준 날짜로 계산해요.
     </div>
   </div>
   <div id="previewArea">${previewHtml()}</div>
@@ -2692,15 +2694,24 @@ async function handleFiles(files) {
   if (found) toast(`할 일 ${found}개를 정리했어요. 확인하고 ✅ 입력을 누르세요.`);
 }
 /* 클립보드 읽기 (브라우저가 허락할 때만) */
-async function readClipboardInto(ta) {
+/* 클립보드 읽어서 붙여넣기. auto: 빈 칸을 눌렀을 때(조용히 실패하고, 이미 넣은 글이면 건너뛰어요) */
+async function readClipboardInto(ta, auto) {
+  if (!ta) return;
   try {
     if (!navigator.clipboard || !navigator.clipboard.readText) throw 0;
     const t = await navigator.clipboard.readText();
-    if (!t || !t.trim()) { toast('클립보드가 비어 있어요. 먼저 글을 복사해 주세요.'); return; }
-    ta.value = t; UI.draft.text = t; UI.justSaved = 0; organizePaste(true); ta.focus();
+    if (!t || !t.trim()) { if (!auto) toast('클립보드가 비어 있어요. 먼저 글을 복사(Ctrl+C)해 주세요.'); return; }
+    if (auto && (ta.value || '').trim()) return;
+    const dup = S.sources.find(x => x.hash === hashText(t.trim()));
+    if (auto && dup) { toast(`복사해 둔 글은 이미 넣은 자료예요 (${dup.name}). 새 글을 복사한 뒤 다시 눌러 주세요.`); return; }
+    ta.value = t; UI.draft.text = t; UI.justSaved = 0; organizePaste(true);
+    ta.focus(); ta.setSelectionRange(0, 0); ta.scrollTop = 0;
+    const n = t.split('\n').filter(x => x.trim()).length;
+    if (auto) toast(`복사해 둔 글 ${n}줄을 붙여넣었어요.`, null, '직접 쓸게요', () => { ta.value = ''; UI.draft.text = ''; organizePaste(true); ta.focus(); });
+    else if (dup) toast(`이미 넣은 자료(${dup.name})와 같은 글이에요. 한 번 더 넣으려면 그대로 입력하세요.`);
   } catch (e) {
     ta.focus();
-    toast('브라우저가 클립보드 읽기를 막았어요. 칸을 누르고 Ctrl+V(맥은 ⌘+V)로 붙여넣어 주세요.');
+    if (!auto) toast('브라우저가 클립보드 읽기를 막았어요. 주소창 왼쪽 자물쇠에서 "클립보드"를 허용하거나, Ctrl+V(맥은 ⌘+V)로 붙여넣어 주세요.');
   }
 }
 /* 다른 화면에서 붙여넣기 → 자료 넣기 화면으로 */
@@ -3156,7 +3167,8 @@ function onAction(e) {
     case 'draft-add': { const c = { id: uid(), date: UI.refDate, endDate: null, time: '', title: '', type: 'deadline', sentence: '', spans: [], checked: true, warn: '', manual: true }; UI.draft.cands.unshift(c); updatePreview(); setTimeout(() => { const i = document.querySelector(`[data-cid="${c.id}"] [data-cf=title]`); if (i) { i.focus(); i.scrollIntoView({ block: 'center' }); } }, 30); break; }
     case 'paste-clear': { const ta = $('#pasteText'); if (ta) { ta.value = ''; UI.draft.text = ''; UI.draft.cands = UI.draft.cands.filter(c => c.manual); updatePreview(); ta.focus(); } break; }
     case 'clip-read': readClipboardInto($('#' + el.dataset.target)); break;
-    case 'quick-paste': openQuickPaste(); break;
+    case 'quick-paste': openQuickPaste(); readClipboardInto($('#pasteText')); break;
+    case 'click-paste': { S.settings.clickPaste = el.checked; persist(); const ta = $('#pasteText'); if (ta) ta.placeholder = el.checked ? '공문·메신저 글을 복사(Ctrl+C)한 뒤 여기를 한 번 누르세요. 자동으로 붙여넣어져요' : '여기를 누르고 Ctrl+V (맥은 ⌘+V)'; toast(el.checked ? '빈 칸을 누르면 복사해 둔 글을 바로 붙여넣어요.' : '이제 빈 칸을 눌러도 자동으로 붙여넣지 않아요.'); break; }
     case 'cand-del': { const f = findCand(cid); if (f && f.d) { f.d.cands = f.d.cands.filter(c => c.id !== cid); updatePreview(); } else { S.pending = S.pending.filter(c => c.id !== cid); commit(); } break; }
     case 'cand-all': S.pending.forEach(c => { if ((c.sourceId || 'manual') === el.dataset.sid) c.checked = el.dataset.v === '1'; }); commit(); break;
     case 'cand-drop-group': { const sid = el.dataset.sid; const before = S.pending.slice(); S.pending = S.pending.filter(c => (c.sourceId || 'manual') !== sid); commit(); toast('후보를 버렸어요.', () => { S.pending = before; commit(); }); break; }
@@ -3255,6 +3267,11 @@ main.addEventListener('change', e => {
   if (e.target.id === 'showWork') { S.settings.showWork = e.target.checked; { const hb = new Set(S.settings.hiddenBlocks || []); if (e.target.checked) hb.delete('sky'); else hb.add('sky'); S.settings.hiddenBlocks = [...hb]; } Store.save(S); toast(e.target.checked ? '근무 진행 바를 보여 드려요.' : '근무 진행 바를 숨겼어요.'); return; }
   if (e.target.id === 'allStatus') { UI.filter.status = e.target.value; render(); }
   if (e.target.id === 'allType') { UI.filter.type = e.target.value; render(); }
+});
+main.addEventListener('click', e => {
+  const ta = e.target.closest && e.target.closest('#pasteText');
+  if (!ta || S.settings.clickPaste === false || (ta.value || '').trim()) return;
+  readClipboardInto(ta, true);
 });
 main.addEventListener('keydown', e => { if (UI.tab === 'input' && e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); if (organizeTimer) { clearTimeout(organizeTimer); organizeTimer = null; organizePaste(true); } commitDrafts(); } });
 $('#fileInput').addEventListener('change', e => { const fs = [...e.target.files]; e.target.value = ''; if (fs.length) handleFiles(fs); });
