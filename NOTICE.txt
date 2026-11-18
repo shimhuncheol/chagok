@@ -1,0 +1,8 @@
+차곡 index.html 안에 들어 있는 그림 속 글자 읽기(OCR) 구성 요소
+
+- Tesseract.js 5.1.1 — https://github.com/naptha/tesseract.js — Apache License 2.0
+- tesseract.js-core 5.1.1 (Tesseract OCR를 WebAssembly로 옮긴 것) — https://github.com/naptha/tesseract.js-core — Apache License 2.0
+- Tesseract OCR — https://github.com/tesseract-ocr/tesseract — Apache License 2.0
+- 한국어 학습 데이터 kor.traineddata (tessdata_best, 정수형) — https://github.com/tesseract-ocr/tessdata_best — Apache License 2.0
+
+위 구성 요소는 고치지 않고 그대로 넣었으며, 라이선스 전문은 LICENSE-Apache-2.0.txt에 있어요.
