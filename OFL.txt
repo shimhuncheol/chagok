@@ -1,3 +1,11 @@
+이 프로그램에 들어 있는 글꼴과 저작권 표시
+1) 페이퍼로지(Paperlogy): Copyright (c) 2024 PT& (www.designptn.com), designed by Lee Juim.
+2) K-에듀파인 스타일 글꼴 'ChagokGothicE': 나눔고딕(NanumGothic)을 자주 쓰는 한글로 줄인 글꼴.
+   Copyright (c) 2010, NHN Corporation (http://www.nhncorp.com), with Reserved Font Name Nanum, Naver Nanum, NanumGothic, Naver NanumGothic.
+3) 나이스 스타일 글꼴 'ChagokSansN': Noto Sans KR을 자주 쓰는 한글로 줄인 글꼴.
+   Copyright 2014-2021 Adobe (http://www.adobe.com/), with Reserved Font Name 'Source'.
+줄인(수정한) 글꼴에는 예약된 글꼴 이름을 쓰지 않았습니다. 세 글꼴 모두 아래 SIL Open Font License 1.1을 따릅니다.
+
 Paperlogy (페이퍼로지) — 차곡(index.html) 안에 넣어 쓰는 글꼴
 Copyright (c) 2024 PT& (www.designptn.com), designed by Lee Juim.
 
