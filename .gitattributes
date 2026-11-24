@@ -1,0 +1,5 @@
+# 줄바꿈을 바꾸지 않아요 (윈도우에서도 빌드 결과가 똑같도록)
+* -text
+# 큰 덩어리는 비교(diff)하지 않아요
+src/assets/*.txt -diff linguist-generated
+index.html -diff linguist-generated

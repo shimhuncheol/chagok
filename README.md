@@ -51,5 +51,8 @@ Tesseract.js 5.1.1 · Tesseract OCR · 한국어 학습 데이터(tessdata_best)
 ## 글꼴
 페이퍼로지(Paperlogy) © 2024 PT&, 나눔고딕 © NHN(K-에듀파인 스타일), Noto Sans KR © Adobe(나이스 스타일) — 모두 SIL Open Font License 1.1 (`OFL.txt` 참고). 글꼴은 `index.html` 안에 함께 들어 있어요.
 
+## 고치는 분께
+`index.html` 은 빌드 결과예요. 실제 소스는 `src/chagok.html` 이고, `python tools/build.py` 로 만들어요. 자세한 구조와 작업 순서는 `CLAUDE.md` 를 보세요(Claude Code 가 자동으로 읽어요).
+
 ---
 차곡 v1.5
