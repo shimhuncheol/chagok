@@ -528,7 +528,20 @@ kbd{font-family:inherit;font-size:11.5px;font-weight:700;border:1px solid var(--
 .pk-card .pk-face{width:92px;height:92px;border-radius:50%;margin:0 auto 10px;background:var(--surface2) center/cover no-repeat;display:flex;align-items:center;justify-content:center;font-size:40px;border:4px solid var(--soft)}
 .pk-card .pk-no{font-size:13px;color:var(--text3);font-weight:700}
 .pk-card .pk-name{font-size:24px;font-weight:800;letter-spacing:-.02em}
-.pk-overlay .pk-acts{display:flex;gap:10px}
+.pk-overlay .pk-acts{display:flex;flex-wrap:wrap;justify-content:center;gap:10px}
+.pk-seg{display:inline-flex;border:1px solid var(--border);border-radius:999px;padding:3px;background:var(--surface2)}
+.pk-seg button{border:0;background:transparent;border-radius:999px;padding:7px 13px;font:inherit;font-size:13.5px;font-weight:700;color:var(--text2);cursor:pointer}
+.pk-seg button.on{background:var(--primary);color:var(--on-primary)}
+.pk-order{background:var(--surface);color:var(--text);border-radius:20px;padding:16px 18px;width:min(1100px,100%);max-height:82%;overflow:auto;box-shadow:0 10px 30px rgba(0,0,0,.25);animation:pkPop .45s cubic-bezier(.3,1.4,.5,1) both}
+.pk-oh{font-weight:800;font-size:18px;margin-bottom:12px}
+.pk-oh small{font-weight:500;font-size:13px;color:var(--text3);margin-left:6px}
+.pk-ol{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(178px,1fr));gap:8px}
+.pk-ol li{display:flex;align-items:center;gap:9px;padding:6px 10px 6px 6px;border-radius:14px;background:var(--surface2)}
+.pk-ol li.top{background:var(--soft)}
+.pk-ol li b{flex:none;width:30px;height:30px;border-radius:50%;background:var(--primary);color:var(--on-primary);display:flex;align-items:center;justify-content:center;font-size:14px}
+.pk-ol li i{flex:none;width:38px;height:38px;border-radius:50%;background:var(--surface) center/cover no-repeat;display:flex;align-items:center;justify-content:center;font-style:normal;font-size:20px;border:2px solid var(--surface)}
+.pk-ol li span{font-weight:800;font-size:16px;line-height:1.15;min-width:0}
+.pk-ol li em{display:block;font-style:normal;font-weight:600;font-size:12px;color:var(--text3)}
 .pick-roster{background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow);padding:14px 16px}
 .pick-roster .pk-rh{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin-bottom:10px}
 .pick-roster .pk-rh b{font-size:15px}
@@ -1872,7 +1885,7 @@ function setLogoFromFile(file) {
   img.onerror = () => { URL.revokeObjectURL(url); toast('그림을 열지 못했어요.'); };
   img.src = url;
 }
-const APP_VERSION = '1.6';
+const APP_VERSION = '1.7';
 const HOME_URL = 'https://shimhuncheol.github.io/chagok/';
 const PAGE_TITLE = { input: '자료 넣기', review: '확인하기', todo: '할 일 보기', library: '자료함', school: '학교 정보', seats: '자리 배치', pick: '달리기 뽑기', memo: '메모', backup: '백업·정리' };
 const TABS = ['input', 'review', 'todo', 'library', 'school', 'seats', 'pick', 'memo', 'backup'];
@@ -2938,7 +2951,7 @@ function pickHash(s) { let h = 2166136261; for (const c of String(s)) { h ^= c.c
 function pickRandInt(n) { const a = new Uint32Array(1); crypto.getRandomValues(a); return a[0] % n; }
 function pickShuffle(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = pickRandInt(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 function pickSet() {
-  const d = { count: 1, skipUsed: true, used: [], out: [], names: '', source: 'auto', sound: true };
+  const d = { mode: 'count', count: 1, skipUsed: true, used: [], out: [], names: '', source: 'auto', sound: true };
   const p = S.settings.pick || (S.settings.pick = {});
   for (const k in d) if (!(k in p)) p[k] = d[k];
   return p;
@@ -2962,7 +2975,7 @@ async function pickLoadRoster() {
 }
 function pickPlayers() {
   const ps = pickSet();
-  return PICK.roster.filter(s => !ps.out.includes(s.id) && !(ps.skipUsed && ps.used.includes(s.id)));
+  return PICK.roster.filter(s => !ps.out.includes(s.id) && !(ps.mode !== 'all' && ps.skipUsed && ps.used.includes(s.id)));
 }
 function pickFace(s) { return s.photo ? `style="background-image:url('${s.photo}')"` : ''; }
 function pickAnimal(s) { return ['🐰', '🐻', '🐱'][pickHash(s.id + '#') % 3]; } /* 달리는 캐릭터의 귀 모양(토끼·곰·고양이)과 같게 */
@@ -2973,8 +2986,9 @@ async function pickMount() {
     host.innerHTML = `<div class="pick-wrap" id="pickWrap">
       <div class="pick-bar">
         <div class="pk-title">🏃 달리기 뽑기<small id="pkSub"></small></div>
-        <span class="pk-lbl">뽑을 사람 <span class="pk-step"><button type="button" data-pk="minus" aria-label="한 명 줄이기">−</button><output id="pkCount">1</output><button type="button" data-pk="plus" aria-label="한 명 늘리기">+</button></span></span>
-        <label class="pk-chk"><input type="checkbox" id="pkSkip"> 이미 뽑힌 학생 빼기</label>
+        <span class="pk-seg" role="group" aria-label="뽑는 방식"><button type="button" data-pk="mode" data-m="count">몇 명 뽑기</button><button type="button" data-pk="mode" data-m="all">모두 순서 정하기</button></span>
+        <span class="pk-lbl" id="pkCountWrap">뽑을 사람 <span class="pk-step"><button type="button" data-pk="minus" aria-label="한 명 줄이기">−</button><output id="pkCount">1</output><button type="button" data-pk="plus" aria-label="한 명 늘리기">+</button></span></span>
+        <label class="pk-chk" id="pkSkipWrap"><input type="checkbox" id="pkSkip"> 이미 뽑힌 학생 빼기</label>
         <label class="pk-chk"><input type="checkbox" id="pkSound"> 소리</label>
         <button class="btn line sm" type="button" data-pk="full">⛶ 크게 보기</button>
         <button class="btn pri" type="button" data-pk="go" id="pkGo">출발! 🏁</button>
@@ -3001,7 +3015,11 @@ function pickRefresh(keepManual) {
   if (ps.count > Math.max(1, players.length)) ps.count = Math.max(1, players.length);
   $('#pkCount').textContent = ps.count;
   $('#pkSkip').checked = ps.skipUsed; $('#pkSound').checked = ps.sound;
-  $('#pkSub').textContent = PICK.roster.length ? `${PICK.from === 'seat' ? '자리 배치 명부' : '직접 적은 명단'} · 참가 ${players.length}명` : '명단을 먼저 넣어 주세요';
+  const all = ps.mode === 'all';
+  document.querySelectorAll('#pickHost [data-pk=mode]').forEach(b => b.classList.toggle('on', b.dataset.m === ps.mode));
+  $('#pkCountWrap').classList.toggle('hidden', all); $('#pkSkipWrap').classList.toggle('hidden', all);
+  $('#pkGo').innerHTML = all ? '출발! 순서 정하기 🏁' : '출발! 🏁';
+  $('#pkSub').textContent = PICK.roster.length ? `${PICK.from === 'seat' ? '자리 배치 명부' : '직접 적은 명단'} · 참가 ${players.length}명${ps.mode === 'all' ? ' · 모두 들어온 순서대로 1번부터 정해요' : ''}` : '명단을 먼저 넣어 주세요';
   $('#pkGo').disabled = players.length < 1 || PICK.phase === 'race';
   const usedN = PICK.roster.filter(s => ps.used.includes(s.id)).length, outN = PICK.roster.filter(s => ps.out.includes(s.id)).length;
   const src = PICK.seatCount
@@ -3025,6 +3043,11 @@ function pickClick(e) {
   const b = e.target.closest('[data-pk]'); if (!b) return;
   const ps = pickSet(), k = b.dataset.pk;
   if (k === 'minus' || k === 'plus') { const max = Math.max(1, pickPlayers().length); ps.count = Math.min(max, Math.max(1, ps.count + (k === 'plus' ? 1 : -1))); persist(); pickRefresh(true); }
+  else if (k === 'mode') { ps.mode = b.dataset.m; persist(); pickRefresh(true); }
+  else if (k === 'copy') {
+    const text = PICK.results.map(R => `${R.rank}. ${R.s.no ? R.s.no + '번 ' : ''}${R.s.name}`).join('\n');
+    (navigator.clipboard ? navigator.clipboard.writeText(text) : Promise.reject()).then(() => toast('순서를 복사했어요. 한글·엑셀에 붙여 넣을 수 있어요.'), () => toast('복사하지 못했어요. 화면을 보고 적어 주세요.'));
+  }
   else if (k === 'chip') { const id = b.dataset.id; ps.out = ps.out.includes(id) ? ps.out.filter(x => x !== id) : ps.out.concat(id); persist(); pickRefresh(true); }
   else if (k === 'allin') { ps.out = []; persist(); pickRefresh(true); }
   else if (k === 'reset') { ps.used = []; persist(); pickRefresh(true); toast('뽑힌 기록을 지웠어요. 모두 다시 참가해요.'); }
@@ -3129,7 +3152,13 @@ function pickDrawRunner(c, R, t, moving) {
   const top = R.rank && R.rank <= PICK.need;
   const label = top ? `${R.rank}위 · ${s.no ? s.no + '번 ' : ''}${s.name}` : `${s.no ? s.no + ' ' : ''}${s.name}`;
   const tw = c.measureText(label).width, lx = top ? hx - tw / 2 - 8 : hx + hr + 6, ly = top ? hy - hr * 2.05 : hy;
-  if (top || (PICK.phase === 'idle' && PICK.lane >= 15)) {
+  if (top && PICK.all) {
+    const br = Math.max(9, hr * (R.rank <= 3 ? 0.52 : 0.42)), bx = hx + hr * 0.78, by = hy - hr * 0.78;
+    c.fillStyle = ['#FFD84D', '#E3E8EF', '#F2B27A'][R.rank - 1] || '#FFE27A'; c.beginPath(); c.arc(bx, by, br, 0, 7); c.fill(); c.lineWidth = 1.5; c.strokeStyle = '#fff'; c.stroke();
+    c.fillStyle = '#2B2F36'; c.textAlign = 'center'; c.font = `800 ${Math.round(br * 1.05)}px ${pickFont()}`; c.fillText(R.rank, bx, by + 0.5);
+  } else if (top) {
+    PICK.tags.push({ label, tw, fs, x: lx, y: ly, R });   /* 큰 이름표는 모두 그린 뒤 겹치지 않게 따로 그려요 */
+  } else if (PICK.phase === 'idle' && PICK.lane >= 15) {
     c.fillStyle = top ? '#FFE27A' : 'rgba(255,255,255,.92)';
     pickRound(c, lx, ly - fs * 0.85, tw + 16, fs * 1.7, fs * 0.85); c.fill();
     c.fillStyle = '#2B2F36'; c.fillText(label, lx + 8, ly + 0.5);
@@ -3144,10 +3173,38 @@ function pickDraw(t) {
   if (PICK.phase === 'idle') pickLayout();
   pickDrawField(c, g, t);
   const moving = PICK.phase === 'race';
+  PICK.tags = [];
   [...PICK.runners].sort((a, b) => a.y - b.y).forEach(R => pickDrawRunner(c, R, t, moving && !R.stop));
+  /* 순위 이름표: 위아래로 겹치면 살짝 비켜서 그려요 */
+  const placed = [];
+  PICK.tags.sort((a, b) => a.R.rank - b.R.rank).forEach(tg => {
+    const h = tg.fs * 1.7, w = tg.tw + 16; let x = Math.min(g.W - w - 4, Math.max(4, tg.x)), y = tg.y - tg.fs * 0.85;
+    for (let k = 0; k < 40 && placed.some(b => x < b.x + b.w + 4 && b.x < x + w + 4 && y < b.y + b.h + 3 && b.y < y + h + 3); k++) y -= h * 0.55;
+    y = Math.max(2, y); placed.push({ x, y, w, h });
+    c.font = `700 ${tg.fs}px ${pickFont()}`; c.textAlign = 'left'; c.textBaseline = 'middle';
+    c.fillStyle = '#FFE27A'; pickRound(c, x, y, w, h, h / 2); c.fill();
+    c.fillStyle = '#2B2F36'; c.fillText(tg.label, x + 8, y + h / 2 + 0.5); c.textBaseline = 'alphabetic';
+  });
   if (!PICK.runners.length) {
     c.fillStyle = '#7a5a45'; c.textAlign = 'center'; c.font = `800 20px ${pickFont()}`;
     c.fillText('참가할 학생이 없어요. 아래에서 명단을 넣어 주세요.', g.W / 2, (g.top + g.bottom) / 2);
+  }
+  if (PICK.phase === 'race' && PICK.speed < 0.85) { // 느린 화면
+    const a = (0.85 - PICK.speed) / 0.6;
+    const vg = c.createRadialGradient(g.W / 2, g.H / 2, Math.min(g.W, g.H) * 0.35, g.W / 2, g.H / 2, Math.max(g.W, g.H) * 0.72);
+    vg.addColorStop(0, 'rgba(30,20,10,0)'); vg.addColorStop(1, `rgba(30,20,10,${0.38 * a})`); c.fillStyle = vg; c.fillRect(0, 0, g.W, g.H);
+    c.globalAlpha = Math.min(1, a * 1.4); c.fillStyle = 'rgba(0,0,0,.55)'; pickRound(c, 12, 12, 118, 30, 15); c.fill();
+    c.fillStyle = '#fff'; c.font = `800 14px ${pickFont()}`; c.textAlign = 'left'; c.textBaseline = 'middle'; c.fillText('🎬 느린 화면', 24, 27.5); c.textBaseline = 'alphabetic'; c.globalAlpha = 1;
+  }
+  const fl = PICK.flash;
+  if (fl && PICK.phase === 'race' && performance.now() < fl.until) {
+    const R = fl.R, hx = R.x + R.r * 0.12, hy = R.y - R.r * 0.45 - R.r * 0.58 * 2.3;
+    c.lineWidth = 4; c.strokeStyle = '#FF6B4A'; c.beginPath(); c.arc(hx, R.y - R.r * 0.45, R.r * 0.58 + 4, 0, 7); c.stroke();
+    c.font = `800 ${Math.max(14, R.r * 0.6)}px ${pickFont()}`; const w = c.measureText(fl.text).width + 22, h = Math.max(26, R.r * 0.95);
+    const bx = Math.min(g.W - w - 6, Math.max(6, hx - w / 2)), by = Math.max(g.top - h, hy - h);
+    c.fillStyle = '#FF6B4A'; pickRound(c, bx, by, w, h, h / 2); c.fill();
+    c.beginPath(); c.moveTo(hx - 6, by + h); c.lineTo(hx + 6, by + h); c.lineTo(hx, by + h + 8); c.fill();
+    c.fillStyle = '#fff'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText(fl.text, bx + w / 2, by + h / 2 + 1); c.textBaseline = 'alphabetic';
   }
   if (PICK.cd) { // 3·2·1
     c.fillStyle = 'rgba(255,255,255,.85)'; c.beginPath(); c.arc(g.W / 2, g.H / 2, Math.min(g.W, g.H) * 0.16, 0, 7); c.fill();
@@ -3169,26 +3226,35 @@ function pickBeep(freq, dur, vol) {
 function pickStart() {
   const ps = pickSet(), players = pickPlayers();
   if (!players.length || PICK.phase === 'race') return;
-  PICK.need = Math.min(ps.count, players.length);
-  pickLayout(); const order = pickShuffle(PICK.runners);
-  const base = 6.2 + Math.min(players.length, 30) * 0.03;
+  PICK.all = ps.mode === 'all';
+  PICK.need = PICK.all ? players.length : Math.min(ps.count, players.length);
+  pickLayout(); const order = pickShuffle(PICK.runners), n = order.length;
+  const base = 6.2 + Math.min(n, 30) * 0.03;
+  const gap = PICK.all ? Math.max(0.16, Math.min(0.42, 5 / n)) : 0.42;
   order.forEach((R, k) => {
-    R.T = k < PICK.need ? base + k * 0.42 : base + PICK.need * 0.42 + 0.25 + (k - PICK.need) * 0.12 + Math.random() * 0.3;
-    R.A = 0.07 + Math.random() * 0.16; R.f = 1 + Math.random() * 1.2; R.phi = Math.random() * 6.28; R.rank = 0; R.stop = false;
+    R.T = k < PICK.need ? base + k * gap : base + PICK.need * gap + 0.25 + (k - PICK.need) * 0.12 + Math.random() * 0.3;
+    R.A = 0.07 + Math.random() * 0.16; R.f = 1 + Math.random() * 1.2; R.phi = Math.random() * 6.28; R.rank = 0; R.stop = false; R.p = 0;
   });
   PICK.order = order; PICK.results = []; PICK.phase = 'race'; PICK.cd = '3'; $('#pkGo').disabled = true;
+  /* 느린 화면: 실제 시간 대신 '경주 시간(vt)'을 흐르게 하고, 역전·결승 직전에는 천천히 흐르게 해요 */
+  Object.assign(PICK, { vt: 0, speed: 1, slowUntil: 0, leader: null, leadAt: -9, slowN: 0, flash: null, finishSlow: false });
   const g0 = pickGeo(); PICK.runners.forEach(R => { R.x = g0.x0 - R.r * 0.6; });
-  const t0 = performance.now(); let lastCd = '';
+  const t0 = performance.now(); let lastCd = '', last = 0;
+  const slow = (now, ms, R, text) => { PICK.slowUntil = now + ms; PICK.flash = { R, text, until: now + ms + 350 }; pickBeep(392, 0.22, 0.1); };
   const step = now => {
     const el = (now - t0) / 1000, g = pickGeo();
     if (el < 2.4) {
       PICK.cd = el < 0.8 ? '3' : el < 1.6 ? '2' : '1';
       if (PICK.cd !== lastCd) { lastCd = PICK.cd; pickBeep(520, 0.15); }
-      pickDraw(0); PICK.raf = requestAnimationFrame(step); return;
+      pickDraw(0); last = now; PICK.raf = requestAnimationFrame(step); return;
     }
     if (PICK.cd) { PICK.cd = ''; pickBeep(880, 0.35, 0.16); }
-    const t = el - 2.4, L = g.xf - g.x0;
-    let allIn = true;
+    const dt = Math.min(0.05, (now - last) / 1000); last = now;
+    const target = now < PICK.slowUntil ? 0.28 : 1;
+    PICK.speed += (target - PICK.speed) * Math.min(1, dt * (target < PICK.speed ? 9 : 2.5));
+    PICK.vt += dt * PICK.speed;
+    const t = PICK.vt, L = g.xf - g.x0;
+    let allIn = true, lead = null;
     for (const R of PICK.order) {
       const u = t / R.T;
       let p;
@@ -3196,12 +3262,21 @@ function pickStart() {
         const pb = (u < 0.08 ? u * u / 0.16 : u - 0.04) / 0.96;
         p = pb + R.A * Math.sin(6.283 * R.f * u + R.phi) * u * (1 - u);
         p = Math.max(0, Math.min(0.995, p)); allIn = false;
+        if (!lead || p > lead.p) lead = R;
       } else {
         p = 1 + Math.min(0.06, (u - 1) * 0.35);
-        if (!R.rank) { R.rank = PICK.order.indexOf(R) + 1; if (R.rank <= PICK.need) { PICK.results.push(R); pickBeep(700 + R.rank * 40, 0.18); } }
+        if (!R.rank) { R.rank = PICK.order.indexOf(R) + 1; if (R.rank <= PICK.need) { PICK.results.push(R); if (!PICK.all || R.rank <= 3 || R.rank === PICK.need) pickBeep(700 + Math.min(R.rank, 8) * 40, 0.18); } }
         if (u > 1.25) R.stop = true;
       }
-      R.x = g.x0 + L * p;
+      R.p = p; R.x = g.x0 + L * p;
+    }
+    /* 선두가 바뀌면(역전) 잠깐 느린 화면 — 너무 자주는 말고, 한 경주에 5번까지 */
+    if (lead && !PICK.results.length) {
+      if (PICK.leader && lead !== PICK.leader && t > 1.3 && t - PICK.leadAt > 1.5 && PICK.slowN < 5 && lead.p > 0.15 && lead.p < 0.9) {
+        PICK.leadAt = t; PICK.slowN++; slow(now, 950, lead, '역전!');
+      }
+      PICK.leader = lead;
+      if (!PICK.finishSlow && lead.p > 0.92) { PICK.finishSlow = true; slow(now, 1400, lead, '결승 직전!'); }
     }
     pickDraw(t);
     if (PICK.results.length >= PICK.need && !PICK.shown) { PICK.shown = true; setTimeout(pickShowResults, 900); }
@@ -3212,12 +3287,16 @@ function pickStart() {
 }
 function pickShowResults() {
   const ps = pickSet(), res = PICK.results.slice(0, PICK.need);
-  res.forEach(R => { if (!ps.used.includes(R.s.id)) ps.used.push(R.s.id); });
-  persist();
+  if (!PICK.all) { res.forEach(R => { if (!ps.used.includes(R.s.id)) ps.used.push(R.s.id); }); persist(); }
   pickBeep(660, 0.12); setTimeout(() => pickBeep(990, 0.3, 0.15), 120);
   const ov = $('#pkOverlay');
-  ov.innerHTML = `<div class="pk-res">${res.map(R => `<div class="pk-card"><div class="pk-rank">${R.rank}위</div><div class="pk-face" ${pickFace(R.s)}>${R.s.photo ? '' : pickAnimal(R.s)}</div><div class="pk-no">${R.s.no ? R.s.no + '번' : ''}</div><div class="pk-name">${esc(R.s.name)}</div></div>`).join('')}</div>
-    <div class="pk-acts"><button class="btn pri" type="button" data-pk="again">한 번 더 🏁</button><button class="btn" type="button" data-pk="close">닫기</button></div>`;
+  const face = R => `<i ${pickFace(R.s)}>${R.s.photo ? '' : pickAnimal(R.s)}</i>`;
+  ov.innerHTML = PICK.all
+    ? `<div class="pk-order"><div class="pk-oh">🏁 순서가 정해졌어요 <small>${res.length}명 · 1번부터 차례로 골라요</small></div>
+        <ol class="pk-ol">${res.map(R => `<li class="${R.rank <= 3 ? 'top' : ''}"><b>${R.rank}</b>${face(R)}<span>${R.s.no ? `<em>${R.s.no}번</em>` : ''}${esc(R.s.name)}</span></li>`).join('')}</ol></div>
+       <div class="pk-acts"><button class="btn pri" type="button" data-pk="again">한 번 더 🏁</button><button class="btn" type="button" data-pk="copy">📋 순서 복사</button><button class="btn" type="button" data-pk="close">닫기</button></div>`
+    : `<div class="pk-res">${res.map(R => `<div class="pk-card"><div class="pk-rank">${R.rank}위</div><div class="pk-face" ${pickFace(R.s)}>${R.s.photo ? '' : pickAnimal(R.s)}</div><div class="pk-no">${R.s.no ? R.s.no + '번' : ''}</div><div class="pk-name">${esc(R.s.name)}</div></div>`).join('')}</div>
+       <div class="pk-acts"><button class="btn pri" type="button" data-pk="again">한 번 더 🏁</button>${res.length > 1 ? '<button class="btn" type="button" data-pk="copy">📋 순서 복사</button>' : ''}<button class="btn" type="button" data-pk="close">닫기</button></div>`;
   ov.classList.remove('hidden');
   if (PICK.phase === 'race') { const wait = () => { if (PICK.phase === 'race') return setTimeout(wait, 200); pickRefresh(true); }; wait(); }
   else pickRefresh(true);

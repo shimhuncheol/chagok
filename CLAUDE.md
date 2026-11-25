@@ -37,9 +37,9 @@ python tools/smoke_test.py      # 3) 점검 (처음 한 번: pip install playwri
 커밋 전에 `python tools/build.py --check` 가 통과해야 한다 (index.html 과 소스가 같아야 함).
 
 ### 새 버전 낼 때 함께 바꿀 것
-1. `src/chagok.html` 의 `const APP_VERSION = '1.6';`
-2. `sw.js` 의 `const CACHE = 'chagok-v1.6';`
-3. `README.md` 맨 아래 `차곡 v1.6` 과 기능 목록
+1. `src/chagok.html` 의 `const APP_VERSION = '1.7';`
+2. `sw.js` 의 `const CACHE = 'chagok-v1.7';`
+3. `README.md` 맨 아래 `차곡 v1.7` 과 기능 목록
 
 ## src/chagok.html 안의 순서 (JS 큰 제목 주석 `/* ===== */` 기준)
 1. 할 일 찾기 엔진 (규칙 기반) — 날짜 표현(`11. 20.(금)`, `내일`, `다음 주 금요일`, 기간 `~`), 마감/행사 구분
@@ -75,7 +75,9 @@ python tools/smoke_test.py      # 3) 점검 (처음 한 번: pip install playwri
 - `#pickHost`(main 밖)에 한 번만 만들고 유지. canvas 2D 로 경기장·캐릭터를 그린다(사진이 있으면 얼굴 자리에 사진).
 - 명단: 자리 배치 저장값(`SEAT.raw` 의 students: no·name·photo) → 없으면 `S.settings.pick.names`(직접 적은 이름).
 - 순위는 출발 전에 `crypto.getRandomValues` 로 섞어 정하고, 달리는 모습(흔들림)만 연출. 결승 통과 시각이 순위대로라 화면과 결과가 항상 같다.
-- 설정 `S.settings.pick`: count·skipUsed·used(뽑힌 학생 id)·out(오늘 빠짐)·names·source·sound. `pickSet()` 은 같은 객체를 고쳐 쓴다(새 객체로 바꾸지 말 것).
+- 방식: `mode` 'count'(몇 명 뽑기, 뽑힌 학생은 used 에 기록) / 'all'(모두 순서 정하기, used 기록 안 함).
+- 느린 화면: 실제 시간 대신 경주 시간 `PICK.vt` 를 `PICK.speed` 배로 흘린다. 선두가 바뀌면(역전, 한 경주 5번까지)·결승 직전에 잠깐 0.28배.
+- 설정 `S.settings.pick`: mode·count·skipUsed·used(뽑힌 학생 id)·out(오늘 빠짐)·names·source·sound. `pickSet()` 은 같은 객체를 고쳐 쓴다(새 객체로 바꾸지 말 것).
 
 ## OCR (그림 속 글자 읽기)
 Tesseract.js 5.1.1 + 한국어 tessdata_best 를 `src/assets/ocr*.txt` 로 넣었다. file:// 에서 blob 안의 importScripts 가 막혀서,

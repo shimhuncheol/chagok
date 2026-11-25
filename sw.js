@@ -2,7 +2,7 @@
    - 화면(index.html)은 인터넷이 되면 항상 새로 받아 최신 버전을 보여 주고, 끊기면 저장해 둔 것으로 열어요.
    - 아이콘 같은 나머지 파일은 저장해 둔 것을 먼저 써요.
    - 할 일·메모 같은 내용은 여기가 아니라 브라우저 저장소(IndexedDB)에 따로 저장돼요. */
-const CACHE = 'chagok-v1.6';
+const CACHE = 'chagok-v1.7';
 const ASSETS = ['./', './index.html', './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png', './icons/icon-maskable-512.png', './icons/apple-touch-icon.png'];
 
 self.addEventListener('install', (e) => {
