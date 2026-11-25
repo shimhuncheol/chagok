@@ -500,6 +500,48 @@ kbd{font-family:inherit;font-size:11.5px;font-weight:700;border:1px solid var(--
 .content{flex:1;min-width:0}
 .seat-host{max-width:1480px;margin:0 auto;padding:10px 8px 20px}
 .seat-host iframe{display:block;width:100%;height:calc(100vh - 128px);min-height:620px;border:1px solid var(--border);border-radius:var(--radius);background:var(--bg);box-shadow:var(--shadow)}
+/* ---------- 🏃 달리기 뽑기 ---------- */
+.pick-host{max-width:1480px;margin:0 auto;padding:10px 8px 24px}
+.pick-wrap{display:flex;flex-direction:column;gap:12px}
+.pick-wrap:fullscreen{background:var(--bg);padding:14px;overflow:auto}
+.pick-bar{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow);padding:12px 16px}
+.pick-bar .pk-title{font-weight:800;font-size:17px;margin-right:auto;display:flex;flex-direction:column;gap:2px}
+.pick-bar .pk-title small{font-weight:500;font-size:12.5px;color:var(--text3)}
+.pk-step{display:inline-flex;align-items:center;border:1px solid var(--border);border-radius:999px;overflow:hidden;background:var(--surface)}
+.pk-step button{border:0;background:transparent;width:34px;height:34px;font-size:18px;cursor:pointer;color:var(--text)}
+.pk-step button:hover{background:var(--surface2)}
+.pk-step output{min-width:34px;text-align:center;font-weight:800;font-size:16px}
+.pk-lbl{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:600;color:var(--text2)}
+.pk-chk{display:inline-flex;align-items:center;gap:6px;font-size:13.5px;color:var(--text2);cursor:pointer}
+.pk-chk input{width:16px;height:16px;accent-color:var(--primary)}
+.pick-bar .btn.pri{font-size:16px;padding:11px 22px}
+.pick-stage{position:relative;border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);background:#F7E9D7}
+.pick-stage canvas{display:block;width:100%}
+.pk-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;background:color-mix(in srgb,#1d2430 45%,transparent);backdrop-filter:blur(2px);padding:18px;animation:pkIn .35s ease}
+@keyframes pkIn{from{opacity:0}to{opacity:1}}
+.pk-overlay.hidden{display:none}
+.pk-res{display:flex;flex-wrap:wrap;justify-content:center;gap:14px;max-height:78%;overflow:auto;padding:4px}
+.pk-card{background:var(--surface);color:var(--text);border-radius:18px;padding:16px 18px 14px;min-width:150px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.25);animation:pkPop .5s cubic-bezier(.3,1.5,.5,1) both}
+.pk-card:nth-child(2){animation-delay:.08s}.pk-card:nth-child(3){animation-delay:.16s}.pk-card:nth-child(n+4){animation-delay:.24s}
+@keyframes pkPop{from{transform:scale(.6) translateY(20px);opacity:0}to{transform:none;opacity:1}}
+.pk-card .pk-rank{display:inline-block;font-weight:800;font-size:13px;background:var(--primary);color:var(--on-primary);border-radius:999px;padding:3px 10px;margin-bottom:10px}
+.pk-card .pk-face{width:92px;height:92px;border-radius:50%;margin:0 auto 10px;background:var(--surface2) center/cover no-repeat;display:flex;align-items:center;justify-content:center;font-size:40px;border:4px solid var(--soft)}
+.pk-card .pk-no{font-size:13px;color:var(--text3);font-weight:700}
+.pk-card .pk-name{font-size:24px;font-weight:800;letter-spacing:-.02em}
+.pk-overlay .pk-acts{display:flex;gap:10px}
+.pick-roster{background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow);padding:14px 16px}
+.pick-roster .pk-rh{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin-bottom:10px}
+.pick-roster .pk-rh b{font-size:15px}
+.pick-roster .pk-rh .sp{flex:1}
+.pk-chips{display:flex;flex-wrap:wrap;gap:6px}
+.pk-chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:999px;padding:3px 10px 3px 3px;font-size:13.5px;cursor:pointer;font-family:inherit}
+.pk-chip i{width:24px;height:24px;border-radius:50%;background:var(--surface2) center/cover no-repeat;display:inline-flex;align-items:center;justify-content:center;font-style:normal;font-size:13px}
+.pk-chip.out{opacity:.38;text-decoration:line-through}
+.pk-chip.used{background:var(--soft);color:var(--soft-text);border-color:transparent}
+.pk-chip.used::after{content:'✓';font-weight:800}
+.pk-manual{margin-top:10px}
+.pk-manual textarea{width:100%;min-height:110px}
+@media (max-width:900px){.pick-host{padding:8px 8px 90px}.pick-bar .pk-title{width:100%}}
 .seat-host .seat-wait{padding:60px 20px;text-align:center;color:var(--text3)}
 @media (max-width:900px){.seat-host{padding:8px 10px 90px}.seat-host iframe{height:calc(100vh - 170px);min-height:560px}}
 .topbar{max-width:1080px;margin:0 auto;padding:30px 20px 6px;display:flex;align-items:center;gap:14px}
@@ -886,6 +928,7 @@ html[data-theme="aurora"] .memo.c-purple{background:linear-gradient(135deg,rgba(
     <button class="tab" data-tab="library" type="button"><span class="ti">📂</span><span class="tl">자료함</span></button>
     <button class="tab" data-tab="school" type="button"><span class="ti">🏫</span><span class="tl">학교 정보</span></button>
     <button class="tab" data-tab="seats" type="button"><span class="ti">🪑</span><span class="tl">자리 배치</span></button>
+    <button class="tab" data-tab="pick" type="button"><span class="ti">🏃</span><span class="tl">달리기 뽑기</span></button>
     <button class="tab" data-tab="memo" type="button"><span class="ti">📝</span><span class="tl">메모</span></button>
     <button class="tab" data-tab="backup" type="button"><span class="ti">⚙️</span><span class="tl">백업·정리</span></button>
   </nav>
@@ -902,6 +945,7 @@ html[data-theme="aurora"] .memo.c-purple{background:linear-gradient(135deg,rgba(
   <div class="banner-area" id="bannerArea"></div>
   <main id="main"></main>
   <div class="seat-host hidden" id="seatHost"></div>
+  <div class="pick-host hidden" id="pickHost"></div>
 </div>
 </div>
 <div class="cmdk-bg hidden" id="cmdk"><div class="cmdk" role="dialog" aria-modal="true" aria-label="명령창">
@@ -1828,10 +1872,10 @@ function setLogoFromFile(file) {
   img.onerror = () => { URL.revokeObjectURL(url); toast('그림을 열지 못했어요.'); };
   img.src = url;
 }
-const APP_VERSION = '1.5';
+const APP_VERSION = '1.6';
 const HOME_URL = 'https://shimhuncheol.github.io/chagok/';
-const PAGE_TITLE = { input: '자료 넣기', review: '확인하기', todo: '할 일 보기', library: '자료함', school: '학교 정보', seats: '자리 배치', memo: '메모', backup: '백업·정리' };
-const TABS = ['input', 'review', 'todo', 'library', 'school', 'seats', 'memo', 'backup'];
+const PAGE_TITLE = { input: '자료 넣기', review: '확인하기', todo: '할 일 보기', library: '자료함', school: '학교 정보', seats: '자리 배치', pick: '달리기 뽑기', memo: '메모', backup: '백업·정리' };
+const TABS = ['input', 'review', 'todo', 'library', 'school', 'seats', 'pick', 'memo', 'backup'];
 const IS_MAC = /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent || '');
 const KLABEL = IS_MAC ? '⌘ K' : 'Ctrl K';
 function greetWord() { const h = new Date().getHours(); return h >= 5 && h < 11 ? '좋은 아침이에요' : h >= 11 && h < 17 ? '좋은 오후예요' : h >= 17 && h < 22 ? '좋은 저녁이에요' : '늦게까지 수고 많으세요'; }
@@ -2288,12 +2332,13 @@ function render() {
   const pc = S.pending.length; const rc = $('#reviewCnt'); rc.textContent = pc; rc.classList.toggle('hidden', !pc);
   document.querySelector('.tab[data-tab=review]').classList.toggle('hidden', !pc && UI.tab !== 'review');
   renderBanner();
-  const fn = { input: renderInput, review: renderReview, todo: renderTodo, library: renderLibrary, school: renderSchool, seats: () => '', memo: renderMemo, backup: renderBackup }[UI.tab] || renderInput;
+  const fn = { input: renderInput, review: renderReview, todo: renderTodo, library: renderLibrary, school: renderSchool, seats: () => '', pick: () => '', memo: renderMemo, backup: renderBackup }[UI.tab] || renderInput;
   main.innerHTML = fn();
   seatToggle(UI.tab === 'seats');
+  pickToggle(UI.tab === 'pick');
   main.querySelectorAll('.memo-b').forEach(autoGrow);
   renderSticky();
-  $('#fab').classList.toggle('hidden', ['input', 'school', 'seats', 'memo'].includes(UI.tab));
+  $('#fab').classList.toggle('hidden', ['input', 'school', 'seats', 'pick', 'memo'].includes(UI.tab));
   moveTabInd(!UI.tabIndReady); UI.tabIndReady = true;
   animateSeg();
   const pageAnim = UI.anim === 'page';
@@ -2869,7 +2914,7 @@ async function seatMount() {
 }
 function seatToggle(on) {
   const host = $('#seatHost'); if (!host) return;
-  host.classList.toggle('hidden', !on); main.classList.toggle('hidden', on);
+  host.classList.toggle('hidden', !on); main.classList.toggle('hidden', on || UI.tab === 'pick');
   if (on) seatMount();
 }
 /* 백업을 불러온 뒤처럼 자리 데이터가 바뀌면 화면을 새로 열어요 */
@@ -2879,6 +2924,303 @@ async function seatReplace(raw) {
 }
 function seatSummary(raw) {
   try { const s = JSON.parse(raw); return s && Array.isArray(s.students) ? `${s.className || '우리 반'} · 학생 ${s.students.length}명` : ''; } catch (e) { return ''; }
+}
+
+
+/* =========================================================
+   🏃 달리기 뽑기 — 학생들이 달려서 결승선에 들어온 순서대로 뽑아요.
+   명단은 🪑 자리 배치의 학생 명부(사진 포함)를 쓰고, 없으면 직접 적은 이름을 써요.
+   순위는 출발 전에 공정한 난수(crypto)로 정해 두고, 달리는 모습만 앞서거니 뒤서거니 보여 줘요.
+   ========================================================= */
+const PICK = { built: false, phase: 'idle', raf: 0, runners: [], results: [], img: {}, roster: [], from: 'seat', W: 0, H: 0, t0: 0, ctx: null, audio: null };
+const PICK_PAL = [['#A8DEC6', '#7CC5A6'], ['#FFDA78', '#F3BC4E'], ['#CDBFF3', '#A795E0'], ['#FFBDCB', '#F293A8'], ['#B3DAF7', '#86BEE9'], ['#D2EAA6', '#AED27A'], ['#FFCFA6', '#F5AD74']];
+function pickHash(s) { let h = 2166136261; for (const c of String(s)) { h ^= c.charCodeAt(0); h = Math.imul(h, 16777619); } return h >>> 0; }
+function pickRandInt(n) { const a = new Uint32Array(1); crypto.getRandomValues(a); return a[0] % n; }
+function pickShuffle(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = pickRandInt(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+function pickSet() {
+  const d = { count: 1, skipUsed: true, used: [], out: [], names: '', source: 'auto', sound: true };
+  const p = S.settings.pick || (S.settings.pick = {});
+  for (const k in d) if (!(k in p)) p[k] = d[k];
+  return p;
+}
+function pickManualList(text) {
+  return String(text || '').split(/\n|,/).map(s => s.trim()).filter(Boolean).map((line, i) => {
+    const m = line.match(/^(\d{1,3})\s*(?:번|\.|\))?\s+(.+)$/);
+    const name = (m ? m[2] : line).replace(/\s+(남|여|M|F)$/i, '').trim();
+    return { id: 'm:' + name, no: m ? +m[1] : i + 1, name, photo: '' };
+  });
+}
+async function pickLoadRoster() {
+  const ps = pickSet(); await seatLoad();
+  let seat = [];
+  try { const s = JSON.parse(SEAT.raw || 'null'); if (s && Array.isArray(s.students)) seat = s.students.filter(x => x && x.name).map(x => ({ id: 's:' + x.id, no: x.no, name: x.name, photo: x.photo || '' })); } catch (e) { }
+  const manual = pickManualList(ps.names);
+  const useSeat = ps.source === 'seat' || (ps.source === 'auto' && seat.length);
+  PICK.seatCount = seat.length; PICK.from = useSeat && seat.length ? 'seat' : 'manual';
+  PICK.roster = (PICK.from === 'seat' ? seat : manual).sort((a, b) => (a.no || 0) - (b.no || 0));
+  PICK.roster.forEach(s => { if (s.photo && !PICK.img[s.id]) { const im = new Image(); im.onload = () => { if (PICK.phase === 'idle') pickDraw(0); }; im.src = s.photo; PICK.img[s.id] = im; } });
+}
+function pickPlayers() {
+  const ps = pickSet();
+  return PICK.roster.filter(s => !ps.out.includes(s.id) && !(ps.skipUsed && ps.used.includes(s.id)));
+}
+function pickFace(s) { return s.photo ? `style="background-image:url('${s.photo}')"` : ''; }
+function pickAnimal(s) { return ['🐰', '🐻', '🐱'][pickHash(s.id + '#') % 3]; } /* 달리는 캐릭터의 귀 모양(토끼·곰·고양이)과 같게 */
+async function pickMount() {
+  const host = $('#pickHost');
+  if (!PICK.built) {
+    PICK.built = true;
+    host.innerHTML = `<div class="pick-wrap" id="pickWrap">
+      <div class="pick-bar">
+        <div class="pk-title">🏃 달리기 뽑기<small id="pkSub"></small></div>
+        <span class="pk-lbl">뽑을 사람 <span class="pk-step"><button type="button" data-pk="minus" aria-label="한 명 줄이기">−</button><output id="pkCount">1</output><button type="button" data-pk="plus" aria-label="한 명 늘리기">+</button></span></span>
+        <label class="pk-chk"><input type="checkbox" id="pkSkip"> 이미 뽑힌 학생 빼기</label>
+        <label class="pk-chk"><input type="checkbox" id="pkSound"> 소리</label>
+        <button class="btn line sm" type="button" data-pk="full">⛶ 크게 보기</button>
+        <button class="btn pri" type="button" data-pk="go" id="pkGo">출발! 🏁</button>
+      </div>
+      <div class="pick-stage" id="pkStage"><canvas id="pkCanvas" aria-label="달리기 화면"></canvas><div class="pk-overlay hidden" id="pkOverlay" role="dialog" aria-label="뽑힌 학생"></div></div>
+      <div class="pick-roster" id="pkRoster"></div>
+    </div>`;
+    host.addEventListener('click', pickClick);
+    host.addEventListener('change', e => {
+      const ps = pickSet();
+      if (e.target.id === 'pkSkip') { ps.skipUsed = e.target.checked; persist(); pickRefresh(); }
+      if (e.target.id === 'pkSound') { ps.sound = e.target.checked; persist(); }
+      if (e.target.name === 'pkSrc') { ps.source = e.target.value; persist(); pickLoadRoster().then(pickRefresh); }
+    });
+    host.addEventListener('input', e => { if (e.target.id === 'pkNames') { pickSet().names = e.target.value; persist(); clearTimeout(PICK.nt); PICK.nt = setTimeout(() => { pickLoadRoster().then(() => pickRefresh(true)); }, 400); } });
+    window.addEventListener('resize', () => { if (UI.tab === 'pick') pickResize(); });
+    document.addEventListener('fullscreenchange', () => { if (UI.tab === 'pick') setTimeout(pickResize, 60); });
+  }
+  await pickLoadRoster();
+  pickRefresh(); pickResize();
+}
+function pickRefresh(keepManual) {
+  const ps = pickSet(), players = pickPlayers();
+  if (ps.count > Math.max(1, players.length)) ps.count = Math.max(1, players.length);
+  $('#pkCount').textContent = ps.count;
+  $('#pkSkip').checked = ps.skipUsed; $('#pkSound').checked = ps.sound;
+  $('#pkSub').textContent = PICK.roster.length ? `${PICK.from === 'seat' ? '자리 배치 명부' : '직접 적은 명단'} · 참가 ${players.length}명` : '명단을 먼저 넣어 주세요';
+  $('#pkGo').disabled = players.length < 1 || PICK.phase === 'race';
+  const usedN = PICK.roster.filter(s => ps.used.includes(s.id)).length, outN = PICK.roster.filter(s => ps.out.includes(s.id)).length;
+  const src = PICK.seatCount
+    ? `<span class="pk-chk"><label class="pk-chk"><input type="radio" name="pkSrc" value="auto" ${PICK.from === 'seat' ? 'checked' : ''}> 자리 배치 명부(${PICK.seatCount}명)</label><label class="pk-chk"><input type="radio" name="pkSrc" value="manual" ${PICK.from === 'manual' ? 'checked' : ''}> 직접 적기</label></span>` : '';
+  const chips = PICK.roster.map(s => `<button type="button" class="pk-chip${ps.out.includes(s.id) ? ' out' : ''}${ps.used.includes(s.id) ? ' used' : ''}" data-pk="chip" data-id="${esc(s.id)}" title="누르면 이번 뽑기에서 빼거나 다시 넣어요"><i ${pickFace(s)}>${s.photo ? '' : pickAnimal(s)}</i>${s.no ? s.no + ' ' : ''}${esc(s.name)}</button>`).join('');
+  const roster = $('#pkRoster');
+  const manualOpen = PICK.from === 'manual';
+  if (keepManual && manualOpen && $('#pkNames')) { roster.querySelector('.pk-chips').innerHTML = chips; roster.querySelector('#pkHead').innerHTML = pickHeadHtml(usedN, outN, src); if (PICK.phase === 'idle') pickResize(); return; }
+  roster.innerHTML = `<div class="pk-rh" id="pkHead">${pickHeadHtml(usedN, outN, src)}</div>
+    <div class="pk-chips">${chips || '<span class="muted small">아직 학생이 없어요.</span>'}</div>
+    ${manualOpen ? `<div class="pk-manual"><div class="muted small" style="margin-bottom:6px">한 줄에 한 명씩 적어 주세요. 번호는 있어도 없어도 돼요. 예) <b>1 김민준</b> · <b>이서연</b>${PICK.seatCount ? '' : ' · 사진까지 쓰려면 🪑 자리 배치에서 사진 명부를 넣어 주세요.'}</div><textarea class="inp" id="pkNames" placeholder="1 김민준&#10;2 이서연&#10;3 박도윤">${esc(pickSet().names)}</textarea></div>` : ''}`;
+  if (PICK.phase === 'idle') pickResize();
+}
+function pickHeadHtml(usedN, outN, src) {
+  return `<b>참가 학생</b><span class="muted small">이름을 누르면 이번 뽑기에서 빠져요${outN ? ` · 빠진 학생 ${outN}명` : ''}${usedN ? ` · 이미 뽑힌 학생 ${usedN}명(✓)` : ''}</span><span class="sp"></span>${src}
+    ${outN ? '<button class="btn xs line" type="button" data-pk="allin">모두 참가</button>' : ''}
+    ${usedN ? '<button class="btn xs line" type="button" data-pk="reset">뽑힌 기록 지우기</button>' : ''}
+    ${PICK.from === 'seat' ? '<button class="btn xs line" type="button" data-pk="seats">🪑 명부 고치기</button>' : ''}`;
+}
+function pickClick(e) {
+  const b = e.target.closest('[data-pk]'); if (!b) return;
+  const ps = pickSet(), k = b.dataset.pk;
+  if (k === 'minus' || k === 'plus') { const max = Math.max(1, pickPlayers().length); ps.count = Math.min(max, Math.max(1, ps.count + (k === 'plus' ? 1 : -1))); persist(); pickRefresh(true); }
+  else if (k === 'chip') { const id = b.dataset.id; ps.out = ps.out.includes(id) ? ps.out.filter(x => x !== id) : ps.out.concat(id); persist(); pickRefresh(true); }
+  else if (k === 'allin') { ps.out = []; persist(); pickRefresh(true); }
+  else if (k === 'reset') { ps.used = []; persist(); pickRefresh(true); toast('뽑힌 기록을 지웠어요. 모두 다시 참가해요.'); }
+  else if (k === 'seats') go('seats');
+  else if (k === 'go' || k === 'again') { $('#pkOverlay').classList.add('hidden'); if (PICK.phase !== 'race' || k === 'again') { cancelAnimationFrame(PICK.raf); PICK.phase = 'idle'; } pickStart(); }
+  else if (k === 'close') { $('#pkOverlay').classList.add('hidden'); PICK.phase = 'idle'; pickRefresh(); }
+  else if (k === 'full') { const w = $('#pickWrap'); if (document.fullscreenElement) document.exitFullscreen(); else if (w.requestFullscreen) w.requestFullscreen().catch(() => toast('이 브라우저에서는 크게 보기를 쓸 수 없어요.')); }
+}
+function pickToggle(on) {
+  const host = $('#pickHost'); if (!host) return;
+  host.classList.toggle('hidden', !on);
+  if (on) { main.classList.add('hidden'); pickMount(); }
+  else if (PICK.phase === 'race') { cancelAnimationFrame(PICK.raf); PICK.phase = 'idle'; }
+}
+/* ---- 화면 크기 ---- */
+function pickResize() {
+  const cv = $('#pkCanvas'); if (!cv) return;
+  const full = !!document.fullscreenElement;
+  const W = cv.parentElement.clientWidth || 900;
+  const n = Math.max(pickPlayers().length, 1);
+  let H = Math.round(Math.max(W * 0.5, 300 + n * 9));
+  H = Math.min(H, full ? window.innerHeight - 190 : Math.max(380, window.innerHeight - 330));
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); cv.style.height = H + 'px';
+  PICK.W = W; PICK.H = H; PICK.ctx = cv.getContext('2d'); PICK.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  if (PICK.phase !== 'race') { pickLayout(PICK.phase === 'done' ? PICK.runners : null); pickDraw(PICK.phase === 'done' ? PICK.tEnd : 0); }
+}
+/* ---- 경기장 ---- */
+function pickGeo() {
+  const W = PICK.W, H = PICK.H, top = Math.round(H * 0.2), bottom = H - 26;
+  return { W, H, top, bottom, x0: Math.max(70, W * 0.08), xf: W * 0.88 };
+}
+function pickLayout(keep) {
+  const g = pickGeo(), list = keep ? keep : pickPlayers().map(s => ({ s }));
+  const n = Math.max(list.length, 1), lane = (g.bottom - g.top - 10) / n;
+  const r = Math.max(17, Math.min(40, lane * 1.75));
+  list.forEach((R, i) => { R.y = g.top + 10 + lane * (i + 0.5) + r * 0.35; R.r = r; R.lane = i; if (!keep) { R.x = g.x0 - r * 0.6; R.c = PICK_PAL[pickHash(R.s.id) % PICK_PAL.length]; R.ear = pickHash(R.s.id + '#') % 3; R.ph = Math.random() * 6; } });
+  if (!keep) PICK.runners = list;
+  PICK.lane = lane;
+}
+function pickDrawField(c, g, t) {
+  const { W, H, top, bottom, x0, xf } = g;
+  // 하늘과 관중석
+  let gr = c.createLinearGradient(0, 0, 0, top);
+  gr.addColorStop(0, '#F6EFE3'); gr.addColorStop(1, '#EFE3D0'); c.fillStyle = gr; c.fillRect(0, 0, W, top);
+  c.fillStyle = '#E3D3BC'; c.fillRect(0, top * 0.18, W, top * 0.52);
+  const cols = ['#F29E9E', '#9CC9F0', '#F5D274', '#A9DDBB', '#C9B5EE', '#FFB98A'];
+  for (let row = 0; row < 3; row++) for (let x = 14 + row * 7; x < W; x += 15) {
+    const k = (Math.floor(x) * 7 + row * 13) % cols.length, j = PICK.phase === 'race' ? Math.sin(t * 9 + x * 0.3 + row) * 1.6 : 0;
+    c.fillStyle = cols[k]; c.beginPath(); c.arc(x, top * (0.28 + row * 0.15) + j, 4.2, 0, 7); c.fill();
+  }
+  c.fillStyle = '#B9D9B5'; c.fillRect(0, top * 0.72, W, top * 0.28);
+  // 트랙
+  c.fillStyle = '#EFA481'; c.fillRect(0, top, W, bottom - top + 14);
+  c.strokeStyle = 'rgba(255,255,255,.55)'; c.lineWidth = 1.5;
+  const n = PICK.runners.length || 1;
+  for (let i = 0; i <= n; i++) { const y = top + 10 + PICK.lane * i; c.beginPath(); c.moveTo(0, y); c.lineTo(W, y); c.stroke(); }
+  // 출발선
+  c.fillStyle = '#fff'; c.fillRect(x0 - 2, top + 6, 4, bottom - top - 2);
+  // 결승선 (체크무늬)
+  const sq = 8;
+  for (let y = top + 6, k = 0; y < bottom + 4; y += sq, k++) for (let j = 0; j < 2; j++) { c.fillStyle = (k + j) % 2 ? '#2B2F36' : '#fff'; c.fillRect(xf + j * sq, y, sq, sq); }
+  c.font = '800 13px ' + pickFont(); c.fillStyle = '#7a5a45'; c.textAlign = 'center';
+  c.fillText('출발', x0, top - 4); c.fillText('결승', xf + sq, top - 4);
+}
+function pickFont() { return getComputedStyle(document.documentElement).getPropertyValue('--font') || 'sans-serif'; }
+function pickDrawRunner(c, R, t, moving) {
+  const { r } = R, s = R.s, sp = moving ? 14 : 0;
+  const ph = R.ph + t * sp, bob = moving ? Math.abs(Math.sin(ph)) * r * 0.22 : 0;
+  const x = R.x, y = R.y - bob;
+  // 그림자
+  c.fillStyle = 'rgba(80,40,20,.18)'; c.beginPath(); c.ellipse(R.x, R.y + r * 0.55, r * 0.7 * (1 - bob / r * 0.6), r * 0.16, 0, 0, 7); c.fill();
+  // 다리
+  c.strokeStyle = R.c[1]; c.lineCap = 'round'; c.lineWidth = Math.max(3, r * 0.22);
+  const sw = moving ? Math.sin(ph) * r * 0.35 : 0;
+  c.beginPath(); c.moveTo(x - r * 0.2, y + r * 0.25); c.lineTo(x - r * 0.2 + sw, y + r * 0.58); c.moveTo(x + r * 0.2, y + r * 0.25); c.lineTo(x + r * 0.2 - sw, y + r * 0.58); c.stroke();
+  // 몸
+  c.fillStyle = R.c[0]; c.beginPath(); c.ellipse(x, y + r * 0.1, r * 0.55, r * 0.45, 0, 0, 7); c.fill();
+  if (s.no) { c.fillStyle = 'rgba(255,255,255,.95)'; c.font = `800 ${Math.max(9, r * 0.36)}px ${pickFont()}`; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText(s.no, x - r * 0.05, y + r * 0.16); c.textBaseline = 'alphabetic'; }
+  // 귀
+  const hx = x + r * 0.12, hy = y - r * 0.45, hr = r * 0.58;
+  c.fillStyle = R.c[1];
+  if (R.ear === 0) { for (const d of [-1, 1]) { c.beginPath(); c.ellipse(hx + d * hr * 0.42, hy - hr * 1.05, hr * 0.24, hr * 0.62, d * 0.15, 0, 7); c.fill(); } }
+  else if (R.ear === 1) { for (const d of [-1, 1]) { c.beginPath(); c.arc(hx + d * hr * 0.72, hy - hr * 0.72, hr * 0.34, 0, 7); c.fill(); } }
+  else { for (const d of [-1, 1]) { c.beginPath(); c.moveTo(hx + d * hr * 0.25, hy - hr * 0.8); c.lineTo(hx + d * hr * 0.9, hy - hr * 1.2); c.lineTo(hx + d * hr * 0.85, hy - hr * 0.35); c.fill(); } }
+  // 얼굴 (사진 또는 동물 얼굴)
+  c.save(); c.beginPath(); c.arc(hx, hy, hr, 0, 7); c.closePath();
+  const im = PICK.img[s.id];
+  if (im && im.complete && im.naturalWidth) {
+    c.clip(); const k = Math.max(hr * 2 / im.naturalWidth, hr * 2 / im.naturalHeight);
+    c.drawImage(im, hx - im.naturalWidth * k / 2, hy - im.naturalHeight * k / 2, im.naturalWidth * k, im.naturalHeight * k);
+  } else {
+    c.fillStyle = R.c[0]; c.fill();
+    c.fillStyle = '#3a3030'; c.beginPath(); c.arc(hx - hr * 0.32, hy - hr * 0.05, hr * 0.1, 0, 7); c.arc(hx + hr * 0.32, hy - hr * 0.05, hr * 0.1, 0, 7); c.fill();
+    c.fillStyle = 'rgba(255,120,120,.45)'; c.beginPath(); c.arc(hx - hr * 0.5, hy + hr * 0.25, hr * 0.14, 0, 7); c.arc(hx + hr * 0.5, hy + hr * 0.25, hr * 0.14, 0, 7); c.fill();
+  }
+  c.restore();
+  c.lineWidth = Math.max(2, r * 0.09); c.strokeStyle = '#fff'; c.beginPath(); c.arc(hx, hy, hr, 0, 7); c.stroke();
+  // 이름표
+  const fs = Math.max(10.5, Math.min(14, r * 0.5));
+  c.font = `700 ${fs}px ${pickFont()}`; c.textAlign = 'left'; c.textBaseline = 'middle';
+  const top = R.rank && R.rank <= PICK.need;
+  const label = top ? `${R.rank}위 · ${s.no ? s.no + '번 ' : ''}${s.name}` : `${s.no ? s.no + ' ' : ''}${s.name}`;
+  const tw = c.measureText(label).width, lx = top ? hx - tw / 2 - 8 : hx + hr + 6, ly = top ? hy - hr * 2.05 : hy;
+  if (top || (PICK.phase === 'idle' && PICK.lane >= 15)) {
+    c.fillStyle = top ? '#FFE27A' : 'rgba(255,255,255,.92)';
+    pickRound(c, lx, ly - fs * 0.85, tw + 16, fs * 1.7, fs * 0.85); c.fill();
+    c.fillStyle = '#2B2F36'; c.fillText(label, lx + 8, ly + 0.5);
+  }
+  c.textBaseline = 'alphabetic';
+}
+function pickRound(c, x, y, w, h, r) { c.beginPath(); c.moveTo(x + r, y); c.arcTo(x + w, y, x + w, y + h, r); c.arcTo(x + w, y + h, x, y + h, r); c.arcTo(x, y + h, x, y, r); c.arcTo(x, y, x + w, y, r); c.closePath(); }
+function pickDraw(t) {
+  const c = PICK.ctx; if (!c) return;
+  const g = pickGeo();
+  c.clearRect(0, 0, g.W, g.H);
+  if (PICK.phase === 'idle') pickLayout();
+  pickDrawField(c, g, t);
+  const moving = PICK.phase === 'race';
+  [...PICK.runners].sort((a, b) => a.y - b.y).forEach(R => pickDrawRunner(c, R, t, moving && !R.stop));
+  if (!PICK.runners.length) {
+    c.fillStyle = '#7a5a45'; c.textAlign = 'center'; c.font = `800 20px ${pickFont()}`;
+    c.fillText('참가할 학생이 없어요. 아래에서 명단을 넣어 주세요.', g.W / 2, (g.top + g.bottom) / 2);
+  }
+  if (PICK.cd) { // 3·2·1
+    c.fillStyle = 'rgba(255,255,255,.85)'; c.beginPath(); c.arc(g.W / 2, g.H / 2, Math.min(g.W, g.H) * 0.16, 0, 7); c.fill();
+    c.fillStyle = '#2B2F36'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.font = `800 ${Math.round(Math.min(g.W, g.H) * 0.17)}px ${pickFont()}`;
+    c.fillText(PICK.cd, g.W / 2, g.H / 2 + 4); c.textBaseline = 'alphabetic';
+  }
+}
+/* ---- 소리 (인터넷 없이 직접 만든 삐 소리) ---- */
+function pickBeep(freq, dur, vol) {
+  if (!pickSet().sound) return;
+  try {
+    const A = PICK.audio || (PICK.audio = new (window.AudioContext || window.webkitAudioContext)());
+    const o = A.createOscillator(), gn = A.createGain(); o.type = 'triangle'; o.frequency.value = freq;
+    gn.gain.setValueAtTime(vol || 0.12, A.currentTime); gn.gain.exponentialRampToValueAtTime(0.0001, A.currentTime + dur);
+    o.connect(gn).connect(A.destination); o.start(); o.stop(A.currentTime + dur);
+  } catch (e) { }
+}
+/* ---- 경주 ---- */
+function pickStart() {
+  const ps = pickSet(), players = pickPlayers();
+  if (!players.length || PICK.phase === 'race') return;
+  PICK.need = Math.min(ps.count, players.length);
+  pickLayout(); const order = pickShuffle(PICK.runners);
+  const base = 6.2 + Math.min(players.length, 30) * 0.03;
+  order.forEach((R, k) => {
+    R.T = k < PICK.need ? base + k * 0.42 : base + PICK.need * 0.42 + 0.25 + (k - PICK.need) * 0.12 + Math.random() * 0.3;
+    R.A = 0.07 + Math.random() * 0.16; R.f = 1 + Math.random() * 1.2; R.phi = Math.random() * 6.28; R.rank = 0; R.stop = false;
+  });
+  PICK.order = order; PICK.results = []; PICK.phase = 'race'; PICK.cd = '3'; $('#pkGo').disabled = true;
+  const g0 = pickGeo(); PICK.runners.forEach(R => { R.x = g0.x0 - R.r * 0.6; });
+  const t0 = performance.now(); let lastCd = '';
+  const step = now => {
+    const el = (now - t0) / 1000, g = pickGeo();
+    if (el < 2.4) {
+      PICK.cd = el < 0.8 ? '3' : el < 1.6 ? '2' : '1';
+      if (PICK.cd !== lastCd) { lastCd = PICK.cd; pickBeep(520, 0.15); }
+      pickDraw(0); PICK.raf = requestAnimationFrame(step); return;
+    }
+    if (PICK.cd) { PICK.cd = ''; pickBeep(880, 0.35, 0.16); }
+    const t = el - 2.4, L = g.xf - g.x0;
+    let allIn = true;
+    for (const R of PICK.order) {
+      const u = t / R.T;
+      let p;
+      if (u < 1) {
+        const pb = (u < 0.08 ? u * u / 0.16 : u - 0.04) / 0.96;
+        p = pb + R.A * Math.sin(6.283 * R.f * u + R.phi) * u * (1 - u);
+        p = Math.max(0, Math.min(0.995, p)); allIn = false;
+      } else {
+        p = 1 + Math.min(0.06, (u - 1) * 0.35);
+        if (!R.rank) { R.rank = PICK.order.indexOf(R) + 1; if (R.rank <= PICK.need) { PICK.results.push(R); pickBeep(700 + R.rank * 40, 0.18); } }
+        if (u > 1.25) R.stop = true;
+      }
+      R.x = g.x0 + L * p;
+    }
+    pickDraw(t);
+    if (PICK.results.length >= PICK.need && !PICK.shown) { PICK.shown = true; setTimeout(pickShowResults, 900); }
+    if (!allIn || t < PICK.order[PICK.order.length - 1].T * 1.3) PICK.raf = requestAnimationFrame(step);
+    else { PICK.phase = 'done'; PICK.tEnd = t; pickDraw(t); }
+  };
+  PICK.shown = false; PICK.raf = requestAnimationFrame(step);
+}
+function pickShowResults() {
+  const ps = pickSet(), res = PICK.results.slice(0, PICK.need);
+  res.forEach(R => { if (!ps.used.includes(R.s.id)) ps.used.push(R.s.id); });
+  persist();
+  pickBeep(660, 0.12); setTimeout(() => pickBeep(990, 0.3, 0.15), 120);
+  const ov = $('#pkOverlay');
+  ov.innerHTML = `<div class="pk-res">${res.map(R => `<div class="pk-card"><div class="pk-rank">${R.rank}위</div><div class="pk-face" ${pickFace(R.s)}>${R.s.photo ? '' : pickAnimal(R.s)}</div><div class="pk-no">${R.s.no ? R.s.no + '번' : ''}</div><div class="pk-name">${esc(R.s.name)}</div></div>`).join('')}</div>
+    <div class="pk-acts"><button class="btn pri" type="button" data-pk="again">한 번 더 🏁</button><button class="btn" type="button" data-pk="close">닫기</button></div>`;
+  ov.classList.remove('hidden');
+  if (PICK.phase === 'race') { const wait = () => { if (PICK.phase === 'race') return setTimeout(wait, 200); pickRefresh(true); }; wait(); }
+  else pickRefresh(true);
 }
 
 /* 자료 추가 + 후보 찾기 */
@@ -3390,6 +3732,7 @@ function cmdCommands() {
   add('이동', '📋', '할 일 보기 · 전체 목록', view('all'), { kw: 'all 전체 검색 목록' });
   add('이동', '📂', '자료함', () => go('library'), { kw: 'library 원문 공문 자료' });
   add('이동', '🪑', '자리 배치', () => go('seats'), { kw: 'seats 자리 좌석 배치 모둠 짝 우리 반 자리' });
+  add('이동', '🏃', '달리기 뽑기', () => go('pick'), { kw: 'pick 뽑기 추첨 랜덤 발표 학생 뽑기 달리기 순서' });
   add('이동', '🏫', '학교 정보', () => go('school'), { kw: 'school 주소 우편번호 나이스 학교코드 전화 팩스 다이어리' });
   add('이동', '📝', '메모', () => go('memo'), { kw: 'memo 노트 기록' });
   add('이동', '⚙️', '백업·정리', () => go('backup'), { kw: '설정 settings 백업 로고 디자인' });

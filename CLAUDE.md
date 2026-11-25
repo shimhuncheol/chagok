@@ -37,9 +37,9 @@ python tools/smoke_test.py      # 3) 점검 (처음 한 번: pip install playwri
 커밋 전에 `python tools/build.py --check` 가 통과해야 한다 (index.html 과 소스가 같아야 함).
 
 ### 새 버전 낼 때 함께 바꿀 것
-1. `src/chagok.html` 의 `const APP_VERSION = '1.5';`
-2. `sw.js` 의 `const CACHE = 'chagok-v1.5';`
-3. `README.md` 맨 아래 `차곡 v1.5` 와 기능 목록
+1. `src/chagok.html` 의 `const APP_VERSION = '1.6';`
+2. `sw.js` 의 `const CACHE = 'chagok-v1.6';`
+3. `README.md` 맨 아래 `차곡 v1.6` 과 기능 목록
 
 ## src/chagok.html 안의 순서 (JS 큰 제목 주석 `/* ===== */` 기준)
 1. 할 일 찾기 엔진 (규칙 기반) — 날짜 표현(`11. 20.(금)`, `내일`, `다음 주 금요일`, 기간 `~`), 마감/행사 구분
@@ -48,7 +48,7 @@ python tools/smoke_test.py      # 3) 점검 (처음 한 번: pip install playwri
    + 사진 `ImgStore`(IndexedDB 'chagok-images') + 그림 속 글자 읽기(OCR: `ocrWorker()`, `ocrImage()`)
 4. 상태 — `S`(tasks·sources·memos·settings…), 테마 `THEMES`, 교표 색 뽑기 `extractColors`, `applyTheme()`
 5. 화면 그리기 — `render()` 가 `UI.tab` 에 따라 `renderInput/Review/Todo/Library/School/Memo/Backup` 로 `#main` 을 통째로 다시 그림
-6. 동작 + 🪑 자리 배치(`SEAT`, `seatMount`, `ChagokSeat`) + 붙여넣기→자동 정리(`organizePaste`, `UI.draft.cands`)
+6. 동작 + 🪑 자리 배치(`SEAT`, `seatMount`, `ChagokSeat`) + 🏃 달리기 뽑기(`PICK`, `pickMount`, `pickStart`) + 붙여넣기→자동 정리(`organizePaste`, `UI.draft.cands`)
 7. 모달(`openModal`)·토스트(`toast`)·테마, 명령창(Ctrl+K, `add(...)` 로 항목 추가)
 8. 이벤트 연결 — 클릭은 `data-action="..."` 하나의 switch 에서 처리
 9. 시작
@@ -70,6 +70,12 @@ python tools/smoke_test.py      # 3) 점검 (처음 한 번: pip install playwri
 - 색은 `recolor.py` 가 차곡 테마 변수로 바꾸고, 부모의 `seatTheme()` 이 변수·글꼴을 iframe 에 넣는다.
 - 차곡 백업(`exportBackup`)에 `data.seats` 로 함께 들어가고, 불러오기 때 `seatReplace()`.
 - 원래 사이트의 백업 파일(`우리반자리_날짜.json`)은 자리 배치 안의 **파일로 복원**으로 그대로 불러올 수 있어야 한다(형식 유지).
+
+## 🏃 달리기 뽑기
+- `#pickHost`(main 밖)에 한 번만 만들고 유지. canvas 2D 로 경기장·캐릭터를 그린다(사진이 있으면 얼굴 자리에 사진).
+- 명단: 자리 배치 저장값(`SEAT.raw` 의 students: no·name·photo) → 없으면 `S.settings.pick.names`(직접 적은 이름).
+- 순위는 출발 전에 `crypto.getRandomValues` 로 섞어 정하고, 달리는 모습(흔들림)만 연출. 결승 통과 시각이 순위대로라 화면과 결과가 항상 같다.
+- 설정 `S.settings.pick`: count·skipUsed·used(뽑힌 학생 id)·out(오늘 빠짐)·names·source·sound. `pickSet()` 은 같은 객체를 고쳐 쓴다(새 객체로 바꾸지 말 것).
 
 ## OCR (그림 속 글자 읽기)
 Tesseract.js 5.1.1 + 한국어 tessdata_best 를 `src/assets/ocr*.txt` 로 넣었다. file:// 에서 blob 안의 importScripts 가 막혀서,

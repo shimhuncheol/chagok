@@ -5,7 +5,7 @@
   python tools/smoke_test.py
 
 확인하는 것: 모든 메뉴가 오류 없이 열리는지, 공문 글에서 할 일 후보를 찾는지,
-자리 배치 화면이 열리고 저장되는지, 백업 파일에 자리 배치가 들어가는지.
+자리 배치 화면이 열리고 저장되는지, 달리기 뽑기가 되는지, 백업 파일에 자리 배치가 들어가는지.
 """
 import functools, http.server, json, pathlib, sys, threading
 from playwright.sync_api import sync_playwright
@@ -49,6 +49,12 @@ with sync_playwright() as p:
     fr.locator('#welcomeDemo').click(); pg.wait_for_timeout(1000)
     raw = pg.evaluate('SEAT.raw')
     check(bool(raw) and len(json.loads(raw)['students']) == 24, '자리 배치가 열리고 예시 명단이 저장돼요')
+    pg.evaluate("go('pick')"); pg.wait_for_timeout(800)
+    n = pg.evaluate('pickPlayers().length')
+    check(n == 24, f'달리기 뽑기가 자리 배치 명부를 써요 ({n}명)')
+    pg.click('[data-pk=plus]'); pg.click('#pkGo'); pg.wait_for_selector('#pkOverlay:not(.hidden)', timeout=20000)
+    got = pg.evaluate('PICK.results.map(r => r.rank)')
+    check(got == [1, 2], f'달려서 들어온 순서대로 2명을 뽑아요 {got}')
     with pg.expect_download() as dl:
         pg.evaluate('exportBackup()')
     data = json.loads(pathlib.Path(dl.value.path()).read_text(encoding='utf-8'))
