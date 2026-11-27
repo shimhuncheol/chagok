@@ -77,9 +77,11 @@ table.g tbody th{text-align:right;position:sticky;left:0;background:var(--surfac
   background:color-mix(in srgb,color-mix(in srgb,var(--mark) 65%,#E9A800) calc(var(--h,0) * 100%),var(--surface2))}
 .c.on{background:var(--primary);color:var(--on-primary);box-shadow:inset 0 0 0 2px var(--text)}
 .c.on::before{content:"✓ "}
-.res .c{background:color-mix(in srgb,var(--primary) calc(var(--h,0) * 100%),var(--surface2));color:var(--text)}
+/* 결과: 가장 많으면 짙게, 적을수록 옅게, 아무도 없으면 흰색 */
+.res .c{background:color-mix(in srgb,var(--primary) calc(18% + var(--h,0) * 82%),var(--surface));color:var(--text)}
+.res .c.z{background:var(--surface);box-shadow:inset 0 0 0 1px var(--border);cursor:default}
 .res .c.hi{color:var(--on-primary)}
-.res .c.best{box-shadow:inset 0 0 0 3px var(--text)}
+.legend .gbar{width:84px;background:linear-gradient(90deg,color-mix(in srgb,var(--primary) 18%,var(--surface)),var(--primary));margin:0 6px}
 .res .c.pick{outline:3px solid var(--deadline);outline-offset:1px}
 .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:13.5px;color:var(--text3);margin:10px 2px}
 .legend i{display:inline-block;width:15px;height:15px;border-radius:4px;vertical-align:-2px;margin-right:5px}
@@ -249,8 +251,8 @@ function gridHTML(poll, o) {
       const h = o.heat && o.max ? n / o.max : 0;
       return `<td><button type="button" class="c${S.sel.has(k) ? ' on' : ''}" data-k="${k}" data-r="${ri}" data-c="${ci}" style="--h:${h.toFixed(2)}" aria-pressed="${S.sel.has(k)}" aria-label="${label(k, poll.interval)}${o.heat ? ', ' + n + '명 선택' : ''}">${o.heat && n ? n : ''}</button></td>`;
     }
-    const h = tot ? n / tot : 0;
-    return `<td><button type="button" class="c${h > .55 ? ' hi' : ''}${n && n === o.max ? ' best' : ''}${o.focus === k ? ' pick' : ''}" data-k="${k}" style="--h:${h.toFixed(2)}" aria-label="${label(k, poll.interval)}, ${n}명 가능">${n || ''}</button></td>`;
+    const h = o.max ? n / o.max : 0;
+    return `<td><button type="button" class="c${n ? '' : ' z'}${n && h > .5 ? ' hi' : ''}${o.focus === k ? ' pick' : ''}" data-k="${k}" style="--h:${h.toFixed(2)}" aria-label="${label(k, poll.interval)}, ${n}명 가능">${n || ''}</button></td>`;
   }).join('')}</tr>`).join('');
   return `<div class="tbl-wrap"><table class="g${o.pick ? '' : ' res'}"><thead><tr><th></th>${head}</tr></thead><tbody>${body}</tbody></table></div>`;
 }
@@ -340,7 +342,7 @@ function resultHTML(d) {
     who = `<div class="card pink"><h2>${label(focusK, poll.interval)}</h2><div class="who"><div><b>가능 ${yes.length}명</b><div class="names">${yes.map(n => `<span>${esc(n)}</span>`).join('') || '<span>없음</span>'}</div></div><div><b>안 됨 ${no.length}명</b><div class="names">${no.map(n => `<span>${esc(n)}</span>`).join('') || '<span>없음</span>'}</div></div></div></div>`;
   }
   return `<div class="card em"><h2>가장 많이 되는 시간</h2>${tot ? `<ol class="best-list">${ranked.map(k => `<li><span class="n num">${counts[k]}명</span><span><b>${label(k, poll.interval)}</b>${counts[k] === tot ? ' <span class="badge">전원 가능</span>' : ''}<br><span class="small muted">${esc(list.filter(r => !r.slots.includes(k)).map(r => r.name).join(', ')) ? '안 되는 사람: ' + esc(list.filter(r => !r.slots.includes(k)).map(r => r.name).join(', ')) : '모두 가능'}</span></span></li>`).join('') || '<li>아직 고른 칸이 없어요.</li>'}</ol>` : '<p>아직 응답이 없어요. 링크를 보내 보세요.</p>'}</div>
-  <h2>전체 칸표</h2><div class="legend"><span><i style="background:var(--surface2);box-shadow:inset 0 0 0 1px var(--border)"></i>0명</span><span><i style="background:color-mix(in srgb,var(--primary) 50%,var(--surface2))"></i>절반</span><span><i style="background:var(--primary)"></i>전원</span><span><i style="background:var(--surface);box-shadow:inset 0 0 0 3px var(--text)"></i>가장 많은 칸</span><span>칸을 누르면 누가 되는지 보여요</span></div>
+  <h2>전체 칸표</h2><div class="legend"><span><i style="background:var(--surface);box-shadow:inset 0 0 0 1px var(--border)"></i>아무도 없음</span><span>적음<i class="gbar"></i>많음</span><span>칸을 누르면 누가 되는지 보여요</span></div>
   <div id="rg">${gridHTML(poll, { pick: false, counts, total: tot, max, focus: focusK })}</div><div id="who" style="margin-top:14px">${who}</div>`;
 }
 function bindResult(rerender) {
