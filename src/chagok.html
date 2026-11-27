@@ -3402,7 +3402,7 @@ const pendingFiles = new Map();
    차곡에서 인터넷이 필요한 유일한 메뉴예요. 선생님이 넣은 모여요 주소로만 연결하고,
    차곡에는 '내가 만든 협의 목록(제목·관리 키)'만 저장해요. 응답은 모여요의 구글 시트에 있어요.
    ========================================================= */
-const MEET_DEFAULT_URL = ''; // 기본 모여요 주소(…/exec). 넣어 두면 설정 없이 바로 써요.
+const MEET_DEFAULT_URL = 'https://script.google.com/macros/s/AKfycbx0jlfysso3inxLmxFSrxAaLSJYl-klh_xIRfYOJMsXiRUGXkCdO8iV3d2fhNnk3akVkA/exec'; // 기본 일정 협의 서버 (심훈철 배포). 선생님들은 설정 없이 바로 써요.
 const MEET = { view: 'list', id: null, data: null, sums: {}, busy: false, err: '', focus: null, made: false, listLoaded: false, form: null, chips: '' };
 function meetCfg() { if (!S.settings.meet || typeof S.settings.meet !== 'object') S.settings.meet = { url: '', list: [] }; if (!Array.isArray(S.settings.meet.list)) S.settings.meet.list = []; return S.settings.meet; }
 function meetUrl() { return String(meetCfg().url || MEET_DEFAULT_URL || '').trim(); }

@@ -19,7 +19,9 @@ var KEEP_DAYS = 180; // 만든 지 이만큼 지난 협의와 응답은 자동�
 
 function doGet(e) {
   var t = HtmlService.createTemplateFromFile('index');
-  var boot = { url: ScriptApp.getService().getUrl(), params: (e && e.parameter) || {} };
+  // 학교(Workspace) 계정 주소 /a/macros/도메인/ 은 밖에서 열 때 로그인을 요구할 수 있어 일반 주소로 바꿔요
+  var url = ScriptApp.getService().getUrl().replace(/\/a\/macros\/[^/]+\//, '/macros/');
+  var boot = { url: url, params: (e && e.parameter) || {} };
   t.boot = JSON.stringify(boot).replace(/</g, '\\u003c');
   return t.evaluate()
     .setTitle('모여요 · 날짜와 시간 정하기')

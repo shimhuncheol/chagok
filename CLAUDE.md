@@ -86,7 +86,7 @@ python tools/smoke_test.py      # 3) 점검 (처음 한 번: pip install playwri
   고쳤으면 `python src/meet/build_meet.py` 로 `src/assets/meetGs.txt`·`meetPage.txt`(base64)를 다시 만든다 — 메뉴 안 '코드 복사' 버튼이 이걸 쓴다.
 - 차곡 쪽 코드: `MEET`·`renderMeet`·`meetDo`(클릭은 `data-action="meet" data-do="..."`), 서버 부르기 `meetApi(fn, ...args)` = POST `{fn,args}` (text/plain 이라 사전 요청 없음).
   서버 함수: ping · createPoll · loadPoll · summaries · adminUpdate · adminDeleteResponse.
-- 저장: `S.settings.meet = { url, list:[{id,key,title,at}] }` (백업 파일에 함께 들어감). `MEET_DEFAULT_URL` 에 주소를 넣으면 설정 없이 그 주소로 연결.
+- 저장: `S.settings.meet = { url, list:[{id,key,title,at}] }` (백업 파일에 함께 들어감). `MEET_DEFAULT_URL` = 심훈철 계정(shimhuncheol@ssem.re.kr)의 Apps Script 프로젝트 '모여요 (차곡 일정 협의 서버)' 웹 앱 주소. 서버 코드를 고치면 그 프로젝트에 붙여 넣고 **배포 관리 → 수정 → 새 버전**으로 다시 배포(주소는 그대로). 6개월 지난 협의는 서버가 자동 정리.
 - 관리 키(key)가 있어야 결과·설정을 볼 수 있다. 참가자 링크에는 key 가 없다.
 
 ## OCR (그림 속 글자 읽기)
