@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<base target="_top">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>모여요 · 날짜와 시간 정하기</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Schibsted+Grotesk:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+/* VOICE: 교무실 게시판처럼 차분하고 또렷하게
+   IDEA: 약 상자처럼 칸이 나뉜 '일정 협의표' 한 장
+   PICTURE: 날짜×시간 칸표 자체가 화면의 주인공
+   COLOUR/TYPE: 흰 바탕, 에메랄드 블록, 연분홍 강조, 검정 글자 / Schibsted Grotesk 숫자 + Noto Sans KR
+   LAYOUT: 위 띠(제목) → 칸표 → 아래 고정 제출 막대 */
+:root{--bg:#fff;--ink:#0b0f0d;--soft:#5b635f;--line:#dfe5e2;--em:#00a86b;--em-d:#007a4e;--em-l:#e3f6ee;--pink:#ffd6e0;--pink-s:#ff7aa2;--cell:#f4f7f5;--r:14px;color-scheme:light}
+*{box-sizing:border-box;min-width:0}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.55 "Noto Sans KR",system-ui,sans-serif;overflow-x:clip;padding-bottom:96px}
+.num{font-family:"Schibsted Grotesk","Noto Sans KR",sans-serif;font-variant-numeric:tabular-nums}
+header.top{background:var(--em);color:#fff;padding:22px max(5vw,16px) 26px}
+header.top .in{max-width:1040px;margin:0 auto;display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap}
+.brand{font:900 30px/1 "Noto Sans KR",sans-serif;letter-spacing:-.02em}
+.brand b{display:inline-block;background:var(--pink);color:var(--ink);border-radius:8px;padding:2px 8px;margin-left:6px;font:800 15px/1.4 "Schibsted Grotesk",sans-serif;vertical-align:middle}
+.tag{opacity:.9;font-size:15px}
+main{max-width:1040px;margin:0 auto;padding:28px max(5vw,16px)}
+h1{font-size:clamp(26px,4vw,40px);line-height:1.12;margin:0 0 8px;text-wrap:balance;letter-spacing:-.02em}
+h2{font-size:20px;margin:0 0 12px}
+p{margin:0 0 10px}.muted{color:var(--soft)}.small{font-size:14px}
+.card{border:1.5px solid var(--line);border-radius:var(--r);padding:20px;margin:0 0 18px;background:#fff}
+.card.em{background:var(--em-l);border-color:transparent}
+.card.pink{background:var(--pink);border-color:transparent}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:14px}
+label.f{display:block;font-weight:700;font-size:15px;margin-bottom:6px}
+input[type=text],input[type=date],input[type=datetime-local],select,textarea{width:100%;font:inherit;font-size:16px;padding:11px 12px;border:1.5px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);min-height:46px}
+textarea{min-height:70px;resize:vertical}
+input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible{outline:3px solid var(--pink-s);outline-offset:2px}
+.btn{font:700 16px/1 "Noto Sans KR",sans-serif;min-height:46px;padding:0 18px;border-radius:999px;border:1.5px solid var(--ink);background:#fff;color:var(--ink);cursor:pointer;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.btn.pri{background:var(--ink);color:#fff}
+.btn.em{background:var(--em);border-color:var(--em);color:#fff}
+.btn.sm{min-height:36px;font-size:14px;padding:0 12px}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.warn{border-color:#c0264b;color:#c0264b}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1.5px solid var(--ink);background:#fff;border-radius:999px;padding:6px 12px;font:500 14px/1.2 "Noto Sans KR",sans-serif;cursor:pointer;min-height:36px}
+.chip.on{background:var(--ink);color:#fff}
+.chip.off{border-style:dashed;color:var(--soft);border-color:var(--soft);text-decoration:line-through}
+.sw{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-top:1px solid var(--line);cursor:pointer}
+.sw:first-of-type{border-top:0}
+.sw input{appearance:none;flex:none;width:48px;height:28px;border-radius:99px;background:#cfd6d3;position:relative;cursor:pointer;margin:2px 0 0;transition:background .15s}
+.sw input::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:transform .15s}
+.sw input:checked{background:var(--em)}.sw input:checked::after{transform:translateX(20px)}
+.sw b{display:block}
+.summary{font:800 22px/1.2 "Schibsted Grotesk","Noto Sans KR",sans-serif;margin:10px 0 0}
+.badge{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:4px 12px;font-size:14px;font-weight:700;background:var(--pink);white-space:nowrap}
+.badge.em{background:var(--em-l);color:var(--em-d)}.badge.closed{background:#1a1a1a;color:#fff}
+/* 칸표 */
+.tbl-wrap{overflow-x:auto;border:1.5px solid var(--line);border-radius:var(--r);background:#fff}
+table.g{border-collapse:separate;border-spacing:3px;margin:6px;user-select:none;-webkit-user-select:none}
+table.g th{font-weight:700;font-size:13px;white-space:nowrap;padding:4px 6px}
+table.g thead th{position:sticky;top:0;background:#fff;line-height:1.25}
+table.g thead th button{all:unset;cursor:pointer;display:block;text-align:center;padding:2px 4px;border-radius:6px}
+table.g thead th button:hover{background:var(--em-l)}
+table.g thead th .d{font:800 15px "Schibsted Grotesk","Noto Sans KR",sans-serif}
+table.g thead th.sun .w{color:#d6334f}table.g thead th.sat .w{color:#2b62d8}
+table.g tbody th{text-align:right;position:sticky;left:0;background:#fff;z-index:1;font:700 13px "Schibsted Grotesk","Noto Sans KR",sans-serif}
+.c{display:block;width:clamp(44px,8vw,64px);height:34px;border:0;border-radius:7px;cursor:pointer;font:700 12px "Schibsted Grotesk","Noto Sans KR",sans-serif;color:var(--ink);padding:0;
+  background:color-mix(in srgb,var(--pink-s) calc(var(--h,0) * 70%),var(--cell))}
+.c.on{background:var(--em);color:#fff;box-shadow:inset 0 0 0 2px var(--em-d)}
+.c.on::before{content:"✓ "}
+.res .c{background:color-mix(in srgb,var(--em) calc(var(--h,0) * 100%),var(--cell));color:var(--ink)}
+.res .c.hi{color:#fff}
+.res .c.best{box-shadow:inset 0 0 0 3px var(--ink)}
+.res .c.pick{outline:3px solid var(--pink-s);outline-offset:1px}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:14px;color:var(--soft);margin:10px 2px}
+.legend i{display:inline-block;width:16px;height:16px;border-radius:4px;vertical-align:-3px;margin-right:5px}
+.best-list{list-style:none;margin:0;padding:0;counter-reset:b}
+.best-list li{display:flex;gap:12px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
+.best-list li:first-child{border-top:0}
+.best-list .n{font:800 22px "Schibsted Grotesk","Noto Sans KR",sans-serif;min-width:3.2em;text-align:right;color:var(--em-d)}
+.who{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:14px}
+.names{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.names span{background:#fff;border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-size:14px}
+.link-box{display:flex;gap:8px;margin:6px 0 14px}
+.link-box input{font:14px "Schibsted Grotesk","Noto Sans KR",sans-serif;background:#fff}
+table.list{width:100%;border-collapse:collapse;font-size:15px}
+table.list th,table.list td{padding:10px 8px;border-top:1px solid var(--line);text-align:left}
+table.list td.r{text-align:right;white-space:nowrap}
+.bar{position:fixed;left:0;right:0;bottom:0;background:var(--ink);color:#fff;padding:12px max(5vw,16px);z-index:5}
+.bar .in{max-width:1040px;margin:0 auto;display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.bar .btn{border-color:#fff}
+.toast{position:fixed;left:50%;bottom:110px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:12px 18px;border-radius:12px;font-size:15px;z-index:9;max-width:90vw;opacity:0;pointer-events:none;transition:opacity .2s}
+.toast.show{opacity:1}
+.loading{padding:60px 0;text-align:center;color:var(--soft)}
+.ask{border:2px solid var(--ink);border-radius:var(--r);padding:16px;margin:12px 0;background:var(--pink)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media (max-width:600px){header.top{padding:16px 16px 18px}.brand{font-size:24px}.card{padding:16px}table.list .hide-m{display:none}}
+</style>
+</head>
+<body>
+<header class="top"><div class="in"><div class="brand">모여요<b>일정 협의</b></div><div class="tag">날짜와 시간, 링크 하나로 함께 정해요</div></div></header>
+<main id="app"><div class="loading">불러오는 중…</div></main>
+<div class="toast" id="toast" role="status"></div>
+<script>const BOOT = <?!= boot ?>;</script>
+<script>
+{
+const $ = s => document.querySelector(s);
+const app = $('#app');
+const WD = ['일','월','화','수','목','금','토'];
+const P = BOOT.params || {};
+const BASE = BOOT.url;
+const S = { id: P.p || '', key: P.k || '', data: null, sel: new Set(), name: '' };
+
+const esc = v => String(v == null ? '' : v).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const api = (fn, ...a) => new Promise((ok, no) => google.script.run.withSuccessHandler(ok).withFailureHandler(e => no(e && e.message ? e : new Error(String(e))))[fn](...a));
+const pad = n => String(n).padStart(2, '0');
+const ymd = d => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+const pD = s => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); };
+const fD = s => { const d = pD(s); return (d.getMonth() + 1) + '/' + d.getDate() + ' (' + WD[d.getDay()] + ')'; };
+const fDT = ms => { const d = new Date(ms); return (d.getMonth() + 1) + '월 ' + d.getDate() + '일 (' + WD[d.getDay()] + ') ' + pad(d.getHours()) + ':' + pad(d.getMinutes()); };
+const toMin = t => { const [h, m] = t.split(':').map(Number); return h * 60 + m; };
+const fromMin = m => pad(Math.floor(m / 60)) + ':' + pad(m % 60);
+const keyOf = (d, t) => t ? d + 'T' + t : d;
+const label = (k, iv) => { const [d, t] = k.split('T'); return fD(d) + ' ' + (t ? t + '–' + fromMin(toMin(t) + (iv || 60)) : '종일'); };
+const linkP = id => BASE + '?p=' + id;
+const linkA = (id, k) => BASE + '?p=' + id + '&k=' + k;
+const linkR = id => BASE + '?p=' + id + '&view=result';
+let tt;
+function toast(m) { const t = $('#toast'); t.textContent = m; t.classList.add('show'); clearTimeout(tt); tt = setTimeout(() => t.classList.remove('show'), 2600); }
+function fail(e) { toast(e.message || '문제가 생겼어요. 다시 시도해 주세요.'); }
+function copy(text, input) {
+  const done = () => toast('링크를 복사했어요');
+  try { navigator.clipboard.writeText(text).then(done, () => { input.select(); document.execCommand('copy'); done(); }); }
+  catch (e) { input.select(); document.execCommand('copy'); done(); }
+}
+function linkBox(lbl, url, note) {
+  return `<label class="f">${lbl}</label>${note ? `<p class="small muted">${note}</p>` : ''}<div class="link-box"><input type="text" readonly value="${esc(url)}"><button class="btn sm pri" data-copy>복사</button><a class="btn sm" href="${esc(url)}" target="_blank">열기</a></div>`;
+}
+app.addEventListener('click', e => { const b = e.target.closest('[data-copy]'); if (b) { const i = b.parentNode.querySelector('input'); copy(i.value, i); } });
+
+/* ---------- 1. 설문 만들기 ---------- */
+function times(start, end, iv) { const out = []; if (!iv) return out; for (let m = toMin(start); m + iv <= toMin(end); m += iv) out.push(fromMin(m)); return out; }
+function viewCreate() {
+  const today = new Date(), end = new Date(), dl = new Date();
+  end.setDate(today.getDate() + 13); dl.setDate(today.getDate() + 3);
+  const opt = []; for (let m = 6 * 60; m <= 24 * 60; m += 30) opt.push(fromMin(m));
+  const sel = (id, v) => `<select id="${id}">${opt.map(o => `<option${o === v ? ' selected' : ''}>${o}</option>`).join('')}</select>`;
+  app.innerHTML = `
+  <h1>새 일정 협의 만들기</h1><p class="muted">날짜 범위와 시간 간격을 정하면 참가자에게 보낼 링크가 바로 만들어져요.</p>
+  <form id="cf" class="card"><h2>1. 무엇을 정하나요?</h2>
+    <div class="grid2"><div><label class="f" for="t">제목</label><input type="text" id="t" maxlength="80" placeholder="예: 12월 학년 협의회" required></div>
+    <div><label class="f" for="nt">안내 메모 (선택)</label><input type="text" id="nt" maxlength="300" placeholder="예: 1시간 정도 걸려요. 장소는 4층 협의실"></div></div>
+  </form>
+  <div class="card"><h2>2. 날짜 범위</h2>
+    <div class="grid2"><div><label class="f" for="ds">시작일</label><input type="date" id="ds" value="${ymd(today)}"></div>
+    <div><label class="f" for="de">종료일</label><input type="date" id="de" value="${ymd(end)}"></div></div>
+    <label class="f" style="margin-top:14px">포함할 요일</label>
+    <div class="chips" id="wd">${[1,2,3,4,5,6,0].map(w => `<button type="button" class="chip${w > 0 && w < 6 ? ' on' : ''}" data-w="${w}" aria-pressed="${w > 0 && w < 6}">${WD[w]}</button>`).join('')}</div>
+    <label class="f" style="margin-top:14px">만들어질 날짜 <span class="muted small">(빼고 싶은 날을 누르세요)</span></label>
+    <div class="chips" id="dchips"></div>
+  </div>
+  <div class="card"><h2>3. 시간 범위와 간격</h2>
+    <div class="grid2"><div><label class="f" for="iv">시간 간격</label><select id="iv">
+      <option value="30">30분</option><option value="60" selected>1시간</option><option value="90">1시간 30분</option><option value="120">2시간</option><option value="0">시간 없이 날짜만</option></select></div>
+      <div class="tm"><label class="f" for="ts">시작 시각</label>${sel('ts', '09:00')}</div>
+      <div class="tm"><label class="f" for="te">종료 시각</label>${sel('te', '18:00')}</div></div>
+  </div>
+  <div class="card"><h2>4. 마감과 보기 옵션</h2>
+    <div class="grid2"><div><label class="f" for="dl">응답 마감</label><input type="datetime-local" id="dl" value="${ymd(dl)}T18:00"><p class="small muted">비워 두면 관리자가 직접 마감할 때까지 열려 있어요.</p></div></div>
+    <label class="sw"><input type="checkbox" id="hl" checked><span><b>많이 고른 시간 강조하기</b><span class="small muted">참가자 화면에서 다른 사람이 많이 고른 칸일수록 진한 분홍으로 보여요. 끄면 빈 칸표로만 보여요.</span></span></label>
+    <label class="sw"><input type="checkbox" id="sh" checked><span><b>결과 함께 보기</b><span class="small muted">참가자도 결과 링크로 누가 언제 되는지 볼 수 있어요. 끄면 관리자만 봐요.</span></span></label>
+  </div>
+  <div class="card em"><p class="summary num" id="sum"></p><p class="small muted" id="sum2"></p></div>
+  <div class="bar"><div class="in"><span id="barTxt">제목을 쓰고 링크를 만들어요</span><button class="btn em" id="mk">링크 만들기</button></div></div>`;
+  const off = new Set(); let lastChips = '';
+  const read = () => {
+    const ds = $('#ds').value, de = $('#de').value, ws = [...document.querySelectorAll('#wd .on')].map(b => +b.dataset.w);
+    const all = [];
+    if (ds && de && ds <= de) for (let d = pD(ds); ymd(d) <= de && all.length < 120; d.setDate(d.getDate() + 1)) if (ws.includes(d.getDay())) all.push(ymd(d));
+    const iv = +$('#iv').value;
+    return { all, dates: all.filter(d => !off.has(d)), iv, times: times($('#ts').value, $('#te').value, iv) };
+  };
+  const upd = () => {
+    if (!$('#ds')) return;
+    const r = read();
+    document.querySelectorAll('.tm').forEach(x => x.style.display = r.iv ? '' : 'none');
+    const ch = r.all.length ? r.all.map(d => `<button type="button" class="chip${off.has(d) ? ' off' : ''}" data-d="${d}">${fD(d)}</button>`).join('') : '<span class="muted small">날짜 범위를 확인해 주세요.</span>';
+    if (ch !== lastChips) { $('#dchips').innerHTML = ch; lastChips = ch; }
+    const cells = r.dates.length * Math.max(1, r.times.length);
+    $('#sum').textContent = r.iv ? `날짜 ${r.dates.length}일 × 시간 ${r.times.length}칸 = ${cells}칸` : `날짜 ${r.dates.length}일 (시간 없이)`;
+    $('#sum2').textContent = r.dates.length > 62 ? '날짜는 62일까지만 만들 수 있어요.' : r.iv && !r.times.length ? '종료 시각이 시작 시각보다 늦어야 해요.' : r.iv ? `칸 하나는 ${r.iv}분이에요. 참가자는 칸을 누르거나 끌어서 고르면 돼요.` : '참가자는 되는 날짜만 고르면 돼요.';
+  };
+  app.addEventListener('input', upd); app.addEventListener('change', upd);
+  $('#wd').addEventListener('click', e => { const b = e.target.closest('.chip'); if (!b) return; b.classList.toggle('on'); b.setAttribute('aria-pressed', b.classList.contains('on')); upd(); });
+  $('#dchips').addEventListener('click', e => { const b = e.target.closest('.chip'); if (!b) return; off.has(b.dataset.d) ? off.delete(b.dataset.d) : off.add(b.dataset.d); upd(); });
+  upd();
+  $('#mk').onclick = async () => {
+    const r = read(), title = $('#t').value.trim();
+    if (!title) { $('#t').focus(); return toast('제목을 입력해 주세요'); }
+    if (!r.dates.length) return toast('날짜를 하나 이상 남겨 주세요');
+    if (r.dates.length > 62) return toast('날짜는 62일까지만 만들 수 있어요');
+    if (r.iv && !r.times.length) return toast('시간 범위를 확인해 주세요');
+    const dlv = $('#dl').value, deadline = dlv ? new Date(dlv).getTime() : null;
+    if (deadline && deadline < Date.now()) return toast('마감 시각이 이미 지났어요');
+    const b = $('#mk'); b.disabled = true; b.textContent = '만드는 중…';
+    try {
+      const res = await api('createPoll', { title, note: $('#nt').value, dates: r.dates, times: r.times, interval: r.iv, deadline, highlight: $('#hl').checked, share: $('#sh').checked });
+      viewMade(res, title, $('#sh').checked);
+    } catch (e) { fail(e); b.disabled = false; b.textContent = '링크 만들기'; }
+  };
+}
+function viewMade(res, title, share) {
+  window.scrollTo(0, 0);
+  app.innerHTML = `<h1>링크가 만들어졌어요</h1><p class="muted">「${esc(title)}」</p>
+  <div class="card em">${linkBox('참가자에게 보낼 링크', linkP(res.id), '메신저·패들렛·문자로 이 링크를 보내세요. 로그인 없이 이름만 쓰고 제출해요.')}
+  ${share ? linkBox('결과 공유 링크', linkR(res.id), '응답 결과를 함께 보고 싶을 때 보내세요.') : ''}</div>
+  <div class="card pink">${linkBox('관리자 링크 (나만 보관)', linkA(res.id, res.key), '이 링크로 들어가면 응답 확인, 마감, 옵션 변경을 할 수 있어요. 잃어버리면 다시 찾기 어려우니 꼭 저장해 두세요.')}</div>
+  <div class="row"><a class="btn pri" href="${esc(linkA(res.id, res.key))}">관리자 화면으로 가기</a><a class="btn" href="${esc(BASE)}">하나 더 만들기</a></div>`;
+}
+
+/* ---------- 칸표 ---------- */
+function gridHTML(poll, o) {
+  const ts = poll.times.length ? poll.times : [null], counts = o.counts || {};
+  const tot = o.total || 0;
+  const head = poll.dates.map(d => { const w = pD(d).getDay(); const [m, dd] = [pD(d).getMonth() + 1, pD(d).getDate()];
+    return `<th class="${w === 0 ? 'sun' : w === 6 ? 'sat' : ''}" scope="col">${o.pick ? `<button type="button" data-col="${d}" title="이 날 전체 선택">` : '<span>'}<span class="d">${m}/${dd}</span><br><span class="w">${WD[w]}</span>${o.pick ? '</button>' : '</span>'}</th>`; }).join('');
+  const body = ts.map((t, ri) => `<tr><th scope="row">${t || '종일'}</th>${poll.dates.map((d, ci) => {
+    const k = keyOf(d, t), n = counts[k] || 0;
+    if (o.pick) {
+      const h = o.heat && o.max ? n / o.max : 0;
+      return `<td><button type="button" class="c${S.sel.has(k) ? ' on' : ''}" data-k="${k}" data-r="${ri}" data-c="${ci}" style="--h:${h.toFixed(2)}" aria-pressed="${S.sel.has(k)}" aria-label="${label(k, poll.interval)}${o.heat ? ', ' + n + '명 선택' : ''}">${o.heat && n ? n : ''}</button></td>`;
+    }
+    const h = tot ? n / tot : 0;
+    return `<td><button type="button" class="c${h > .55 ? ' hi' : ''}${n && n === o.max ? ' best' : ''}${o.focus === k ? ' pick' : ''}" data-k="${k}" style="--h:${h.toFixed(2)}" aria-label="${label(k, poll.interval)}, ${n}명 가능">${n || ''}</button></td>`;
+  }).join('')}</tr>`).join('');
+  return `<div class="tbl-wrap"><table class="g${o.pick ? '' : ' res'}"><thead><tr><th></th>${head}</tr></thead><tbody>${body}</tbody></table></div>`;
+}
+function status(poll, count) {
+  const parts = [];
+  if (!poll.open) parts.push('<span class="badge closed">마감됨</span>');
+  else if (poll.deadline) { const left = poll.deadline - Date.now(), dd = Math.floor(left / 864e5), hh = Math.floor(left / 36e5);
+    parts.push(`<span class="badge">마감 ${fDT(poll.deadline)} · ${dd >= 1 ? dd + '일 남음' : hh >= 1 ? hh + '시간 남음' : '곧 마감'}</span>`); }
+  else parts.push('<span class="badge">마감 날짜 없음</span>');
+  parts.push(`<span class="badge em">응답 <span class="num">${count}</span>명</span>`);
+  return `<div class="row" style="margin:6px 0 18px">${parts.join('')}</div>`;
+}
+
+/* ---------- 2. 참가하기 ---------- */
+function viewJoin() {
+  const d = S.data, poll = d.poll;
+  if (!poll.open) {
+    app.innerHTML = `<h1>${esc(poll.title)}</h1>${status(poll, d.count)}<div class="card pink"><h2>응답이 마감되었어요</h2><p>더 이상 제출할 수 없어요.</p>${poll.share ? `<a class="btn pri" href="${esc(linkR(poll.id))}">결과 보기</a>` : '<p class="muted small">결과는 만든 분께 확인해 주세요.</p>'}</div>`;
+    return;
+  }
+  const max = Math.max(0, ...Object.values(d.counts || {}));
+  const heat = poll.highlight && !!d.counts;
+  app.innerHTML = `<h1>${esc(poll.title)}</h1>${poll.note ? `<p class="muted">${esc(poll.note)}</p>` : ''}${status(poll, d.count)}
+  <div class="card"><label class="f" for="nm">이름</label><input type="text" id="nm" maxlength="30" placeholder="예: 4학년 1반 심훈철" value="${esc(S.name)}" autocomplete="name"></div>
+  <h2>되는 시간을 모두 골라 주세요</h2>
+  <p class="small muted">칸을 누르면 선택돼요. 컴퓨터에서는 끌어서 네모 모양으로 여러 칸을 한 번에 고를 수 있고, 날짜를 누르면 그날 전체가 선택돼요.</p>
+  <div class="legend"><span><i style="background:var(--em)"></i>내가 고른 시간</span>${heat ? '<span><i style="background:color-mix(in srgb,var(--pink-s) 70%,var(--cell))"></i>다른 사람이 많이 고른 시간 (숫자는 인원)</span>' : ''}</div>
+  <div id="gw">${gridHTML(poll, { pick: true, counts: d.counts, heat, max })}</div>
+  <div class="row" style="margin-top:12px"><button class="btn sm" id="all">모두 선택</button><button class="btn sm" id="none">모두 지우기</button></div>
+  <div id="ask"></div>
+  <div class="bar"><div class="in"><span><b class="num" id="cnt">0</b>칸 선택</span><button class="btn em" id="go">제출하기</button></div></div>`;
+  const cnt = () => $('#cnt').textContent = S.sel.size;
+  const setCell = (b, on) => { const k = b.dataset.k; on ? S.sel.add(k) : S.sel.delete(k); b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); };
+  const gw = $('#gw'); let drag = null, mouse = false, from = null, before = null;
+  const cells = [...gw.querySelectorAll('.c')];
+  const paint = b => { const r0 = Math.min(+from.dataset.r, +b.dataset.r), r1 = Math.max(+from.dataset.r, +b.dataset.r), c0 = Math.min(+from.dataset.c, +b.dataset.c), c1 = Math.max(+from.dataset.c, +b.dataset.c);
+    cells.forEach(x => { const r = +x.dataset.r, c = +x.dataset.c; setCell(x, r >= r0 && r <= r1 && c >= c0 && c <= c1 ? drag : before.has(x.dataset.k)); }); cnt(); };
+  gw.addEventListener('pointerdown', e => { const b = e.target.closest('.c'); if (!b || e.pointerType !== 'mouse') return; e.preventDefault(); mouse = true; from = b; before = new Set(S.sel); drag = !S.sel.has(b.dataset.k); paint(b); });
+  gw.addEventListener('pointerover', e => { if (drag === null) return; const b = e.target.closest('.c'); if (b) paint(b); });
+  window.addEventListener('pointerup', () => { drag = null; });
+  gw.addEventListener('click', e => {
+    const wasMouse = mouse; mouse = false;
+    const col = e.target.closest('[data-col]');
+    if (col) { const bs = [...gw.querySelectorAll(`.c[data-k^="${col.dataset.col}"]`)]; const on = !bs.every(b => b.classList.contains('on')); bs.forEach(b => setCell(b, on)); return cnt(); }
+    const b = e.target.closest('.c'); if (!b || wasMouse) return;
+    setCell(b, !S.sel.has(b.dataset.k)); cnt();
+  });
+  $('#all').onclick = () => { gw.querySelectorAll('.c').forEach(b => setCell(b, true)); cnt(); };
+  $('#none').onclick = () => { gw.querySelectorAll('.c').forEach(b => setCell(b, false)); cnt(); };
+  cnt();
+  const send = async (zeroOk, over) => {
+    S.name = $('#nm').value.trim();
+    if (!S.name) { $('#nm').focus(); return toast('이름을 먼저 써 주세요'); }
+    if (!S.sel.size && !zeroOk) { $('#ask').innerHTML = `<div class="ask"><b>고른 칸이 없어요.</b> 되는 시간이 하나도 없으면 그대로 제출해도 돼요.<div class="row" style="margin-top:10px"><button class="btn pri sm" id="zero">이대로 제출</button></div></div>`; $('#zero').onclick = () => send(true, false); return; }
+    const g = $('#go'); g.disabled = true; g.textContent = '제출 중…';
+    try {
+      const r = await api('submitResponse', poll.id, S.name, [...S.sel], !!over);
+      if (r.exists) {
+        $('#ask').innerHTML = `<div class="ask"><b>「${esc(r.name)}」 이름으로 이미 제출했어요.</b><br>지금 고른 시간으로 바꿀까요? 다른 사람이라면 이름을 조금 다르게 써 주세요.<div class="row" style="margin-top:10px"><button class="btn pri sm" id="ow">새로 고른 시간으로 바꾸기</button><button class="btn sm" id="rn">이름 고치기</button></div></div>`;
+        $('#ow').onclick = () => send(true, true); $('#rn').onclick = () => { $('#ask').innerHTML = ''; $('#nm').focus(); };
+        g.disabled = false; g.textContent = '제출하기'; $('#ask').scrollIntoView({ behavior: 'smooth', block: 'center' }); return;
+      }
+      viewThanks(r);
+    } catch (e) { fail(e); g.disabled = false; g.textContent = '제출하기'; }
+  };
+  $('#go').onclick = () => send(false, false);
+}
+function viewThanks(r) {
+  const poll = S.data.poll, picked = [...S.sel].sort();
+  window.scrollTo(0, 0);
+  app.innerHTML = `<h1>${r.updated ? '응답을 고쳤어요' : '제출했어요, 고마워요!'}</h1><p class="muted">${esc(S.name)} 님 · ${esc(poll.title)}</p>
+  <div class="card em"><h2>내가 고른 시간 <span class="num">${picked.length}</span>칸</h2>${picked.length ? `<div class="names">${picked.slice(0, 40).map(k => `<span>${label(k, poll.interval)}</span>`).join('')}${picked.length > 40 ? `<span>외 ${picked.length - 40}칸</span>` : ''}</div>` : '<p>되는 시간이 없다고 제출했어요.</p>'}</div>
+  <div class="row"><button class="btn" id="edit">다시 고치기</button>${poll.share ? `<a class="btn pri" href="${esc(linkR(poll.id))}">결과 보기</a>` : ''}</div>
+  ${poll.deadline ? `<p class="small muted" style="margin-top:14px">마감(${fDT(poll.deadline)}) 전까지는 같은 이름으로 다시 제출해서 고칠 수 있어요.</p>` : ''}`;
+  $('#edit').onclick = async () => { app.innerHTML = '<div class="loading">불러오는 중…</div>'; try { S.data = await api('loadPoll', S.id, ''); viewJoin(); } catch (e) { fail(e); } };
+}
+
+/* ---------- 3. 결과 (공유·관리자 공통) ---------- */
+let focusK = null;
+function resultHTML(d) {
+  const poll = d.poll, counts = d.counts || {}, list = d.responses || [], tot = list.length;
+  const max = Math.max(0, ...Object.values(counts));
+  const ranked = Object.keys(counts).filter(k => counts[k] > 0).sort((a, b) => counts[b] - counts[a] || (a < b ? -1 : 1)).slice(0, 5);
+  let who = '';
+  if (focusK) {
+    const yes = list.filter(r => r.slots.includes(focusK)).map(r => r.name), no = list.filter(r => !r.slots.includes(focusK)).map(r => r.name);
+    who = `<div class="card pink"><h2>${label(focusK, poll.interval)}</h2><div class="who"><div><b>가능 ${yes.length}명</b><div class="names">${yes.map(n => `<span>${esc(n)}</span>`).join('') || '<span>없음</span>'}</div></div><div><b>안 됨 ${no.length}명</b><div class="names">${no.map(n => `<span>${esc(n)}</span>`).join('') || '<span>없음</span>'}</div></div></div></div>`;
+  }
+  return `<div class="card em"><h2>가장 많이 되는 시간</h2>${tot ? `<ol class="best-list">${ranked.map(k => `<li><span class="n num">${counts[k]}명</span><span><b>${label(k, poll.interval)}</b>${counts[k] === tot ? ' <span class="badge">전원 가능</span>' : ''}<br><span class="small muted">${esc(list.filter(r => !r.slots.includes(k)).map(r => r.name).join(', ')) ? '안 되는 사람: ' + esc(list.filter(r => !r.slots.includes(k)).map(r => r.name).join(', ')) : '모두 가능'}</span></span></li>`).join('') || '<li>아직 고른 칸이 없어요.</li>'}</ol>` : '<p>아직 응답이 없어요. 링크를 보내 보세요.</p>'}</div>
+  <h2>전체 칸표</h2><div class="legend"><span><i style="background:var(--cell)"></i>0명</span><span><i style="background:color-mix(in srgb,var(--em) 50%,var(--cell))"></i>절반</span><span><i style="background:var(--em)"></i>전원</span><span><i style="background:#fff;box-shadow:inset 0 0 0 3px var(--ink)"></i>가장 많은 칸</span><span>칸을 누르면 누가 되는지 보여요</span></div>
+  <div id="rg">${gridHTML(poll, { pick: false, counts, total: tot, max, focus: focusK })}</div><div id="who" style="margin-top:14px">${who}</div>`;
+}
+function bindResult(rerender) {
+  const rg = $('#rg'); if (!rg) return;
+  rg.addEventListener('click', e => { const b = e.target.closest('.c'); if (!b) return; focusK = focusK === b.dataset.k ? null : b.dataset.k; rerender(); if (focusK) $('#who').scrollIntoView({ behavior: 'smooth', block: 'nearest' }); });
+}
+function viewResult() {
+  const d = S.data, poll = d.poll;
+  if (!d.responses) { app.innerHTML = `<h1>${esc(poll.title)}</h1>${status(poll, d.count)}<div class="card pink"><h2>결과는 만든 분만 볼 수 있어요</h2><p>이 설문은 결과 공유를 하지 않도록 설정되어 있어요.</p>${poll.open ? `<a class="btn pri" href="${esc(linkP(poll.id))}">응답하러 가기</a>` : ''}</div>`; return; }
+  app.innerHTML = `<h1>${esc(poll.title)} · 결과</h1>${poll.note ? `<p class="muted">${esc(poll.note)}</p>` : ''}${status(poll, d.count)}${resultHTML(d)}
+  <div class="row" style="margin-top:16px"><button class="btn" id="rf">새로고침</button>${poll.open ? `<a class="btn pri" href="${esc(linkP(poll.id))}">나도 응답하기</a>` : ''}</div>`;
+  bindResult(viewResult);
+  $('#rf').onclick = () => reload(viewResult);
+}
+
+/* ---------- 4. 관리자 ---------- */
+function viewAdmin() {
+  const d = S.data, poll = d.poll, list = (d.responses || []).slice().sort((a, b) => b.at - a.at);
+  const dlv = poll.deadline ? (() => { const x = new Date(poll.deadline); return ymd(x) + 'T' + pad(x.getHours()) + ':' + pad(x.getMinutes()); })() : '';
+  app.innerHTML = `<p class="small muted" style="margin:0 0 4px">관리자 화면</p><h1>${esc(poll.title)}</h1>${status(poll, d.count)}
+  ${resultHTML(d)}
+  <div class="card" style="margin-top:18px"><h2>응답한 사람 <span class="num">${list.length}</span>명</h2>${list.length ? `<table class="list"><thead><tr><th>이름</th><th class="r">고른 칸</th><th class="hide-m">제출 시각</th><th></th></tr></thead><tbody>${list.map((r, i) => `<tr><td>${esc(r.name)}</td><td class="r num">${r.slots.length}</td><td class="hide-m small muted">${r.at ? fDT(r.at) : ''}</td><td class="r"><button class="btn sm warn" data-del="${i}">삭제</button></td></tr>`).join('')}</tbody></table>` : '<p class="muted">아직 응답이 없어요.</p>'}</div>
+  <div class="card"><h2>링크</h2>${linkBox('참가자 링크', linkP(poll.id))}${poll.share ? linkBox('결과 공유 링크', linkR(poll.id)) : ''}${linkBox('관리자 링크 (나만 보관)', linkA(poll.id, S.key))}</div>
+  <div class="card"><h2>설정</h2>
+    <label class="sw"><input type="checkbox" id="hl"${poll.highlight ? ' checked' : ''}><span><b>많이 고른 시간 강조하기</b><span class="small muted">참가자 화면에 다른 사람의 선택 인원을 진하기로 보여 줘요.</span></span></label>
+    <label class="sw"><input type="checkbox" id="sh"${poll.share ? ' checked' : ''}><span><b>결과 함께 보기</b><span class="small muted">참가자도 결과 링크로 결과를 볼 수 있어요.</span></span></label>
+    <div class="grid2" style="margin-top:12px"><div><label class="f" for="dl">응답 마감</label><div class="row"><input type="datetime-local" id="dl" value="${dlv}" style="flex:1"><button class="btn sm pri" id="dls">저장</button></div></div></div>
+    <div class="row" style="margin-top:16px"><button class="btn ${poll.closed ? 'em' : 'warn'}" id="cl">${poll.closed ? '응답 다시 받기' : '지금 바로 마감하기'}</button><button class="btn" id="rf">새로고침</button></div>
+  </div>`;
+  bindResult(viewAdmin);
+  const upd = async (patch, msg) => { try { S.data = await api('adminUpdate', S.id, S.key, patch); viewAdmin(); toast(msg); } catch (e) { fail(e); } };
+  $('#hl').onchange = e => upd({ highlight: e.target.checked }, e.target.checked ? '강조 표시를 켰어요' : '강조 표시를 껐어요');
+  $('#sh').onchange = e => upd({ share: e.target.checked }, e.target.checked ? '결과를 공유해요' : '결과를 관리자만 봐요');
+  $('#dls').onclick = () => { const v = $('#dl').value; upd({ deadline: v ? new Date(v).getTime() : null, closed: false }, v ? '마감 시각을 바꿨어요' : '마감 날짜를 없앴어요'); };
+  $('#cl').onclick = () => upd({ closed: !poll.closed }, poll.closed ? '다시 응답을 받아요' : '마감했어요');
+  $('#rf').onclick = () => reload(viewAdmin);
+  app.querySelectorAll('[data-del]').forEach(b => b.onclick = async () => {
+    if (!b.dataset.sure) { b.dataset.sure = 1; b.textContent = '정말 삭제?'; return; }
+    const r = list[+b.dataset.del]; b.disabled = true;
+    try { S.data = await api('adminDeleteResponse', S.id, S.key, r.name); viewAdmin(); toast(r.name + ' 님 응답을 지웠어요'); } catch (e) { fail(e); }
+  });
+}
+
+/* ---------- 시작 ---------- */
+async function reload(next) {
+  try { S.data = await api('loadPoll', S.id, S.key); next(); toast('최신 결과로 바꿨어요'); } catch (e) { fail(e); }
+}
+async function start() {
+  if (!S.id) return viewCreate();
+  try {
+    S.data = await api('loadPoll', S.id, S.key);
+    if (S.key) { if (!S.data.admin) { app.innerHTML = '<div class="card pink"><h2>관리자 링크가 맞지 않아요</h2><p>링크를 끝까지 복사했는지 확인해 주세요.</p></div>'; return; } return viewAdmin(); }
+    if (P.view === 'result') return viewResult();
+    viewJoin();
+  } catch (e) { app.innerHTML = `<div class="card pink"><h2>설문을 열 수 없어요</h2><p>${esc(e.message)}</p><a class="btn" href="${esc(BASE)}">새 일정 협의 만들기</a></div>`; }
+}
+start();
+}
+</script>
+</body>
+</html>

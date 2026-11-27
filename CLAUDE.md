@@ -6,7 +6,8 @@
 ## 꼭 지킬 원칙
 - **파일 하나**: 결과물은 `index.html` 하나. 더블클릭(file://)으로도, 인터넷 없이도 동작해야 한다.
 - **서버·API·로그인·AI 토큰 없음**: 외부 요청을 새로 만들지 말 것. 할 일 찾기는 규칙 기반(정규식) 엔진이다.
-  (예외: 자리 배치의 PDF 명부 읽기만 cdnjs 의 PDF.js 를 불러온다.)
+  (예외: 자리 배치의 PDF 명부 읽기만 cdnjs 의 PDF.js 를 불러온다.
+   예외 2: 📆 일정 협의 메뉴만 선생님이 넣은 '모여요' 웹 앱 주소(script.google.com …/exec)로 fetch 한다. 다른 메뉴는 그대로 인터넷 없이.)
 - **내용은 브라우저에만**: IndexedDB(안 되면 localStorage) 에 저장. 어디로도 보내지 않는다.
 - **화면 글은 존댓말·쉬운 말**: "~해요" 체. 개발 용어(파싱, 렌더 등) 대신 선생님이 쓰는 말.
 - 사용자는 비개발자 선생님. 설명도 쉬운 한국어로.
@@ -37,9 +38,9 @@ python tools/smoke_test.py      # 3) 점검 (처음 한 번: pip install playwri
 커밋 전에 `python tools/build.py --check` 가 통과해야 한다 (index.html 과 소스가 같아야 함).
 
 ### 새 버전 낼 때 함께 바꿀 것
-1. `src/chagok.html` 의 `const APP_VERSION = '1.7';`
-2. `sw.js` 의 `const CACHE = 'chagok-v1.7';`
-3. `README.md` 맨 아래 `차곡 v1.7` 과 기능 목록
+1. `src/chagok.html` 의 `const APP_VERSION = '1.8';`
+2. `sw.js` 의 `const CACHE = 'chagok-v1.8';`
+3. `README.md` 맨 아래 `차곡 v1.8` 과 기능 목록
 
 ## src/chagok.html 안의 순서 (JS 큰 제목 주석 `/* ===== */` 기준)
 1. 할 일 찾기 엔진 (규칙 기반) — 날짜 표현(`11. 20.(금)`, `내일`, `다음 주 금요일`, 기간 `~`), 마감/행사 구분
@@ -78,6 +79,15 @@ python tools/smoke_test.py      # 3) 점검 (처음 한 번: pip install playwri
 - 방식: `mode` 'count'(몇 명 뽑기, 뽑힌 학생은 used 에 기록) / 'all'(모두 순서 정하기, used 기록 안 함).
 - 느린 화면: 실제 시간 대신 경주 시간 `PICK.vt` 를 `PICK.speed` 배로 흘린다. 선두가 바뀌면(역전, 한 경주 5번까지)·결승 직전에 잠깐 0.28배.
 - 설정 `S.settings.pick`: mode·count·skipUsed·used(뽑힌 학생 id)·out(오늘 빠짐)·names·source·sound. `pickSet()` 은 같은 객체를 고쳐 쓴다(새 객체로 바꾸지 말 것).
+
+## 📆 일정 협의 (모여요)
+- 응답을 여러 사람에게서 모아야 해서 구글 Apps Script 웹 앱 **모여요**를 서버로 쓴다. 참가자는 모여요 페이지(…/exec?p=ID)에서 로그인 없이 제출.
+- 모여요 원본: `src/meet/Code.gs`(서버: 시트 저장, `doGet` 페이지, `doPost` 차곡용 통로), `src/meet/index.html`(참가자·결과·웹 관리자 화면).
+  고쳤으면 `python src/meet/build_meet.py` 로 `src/assets/meetGs.txt`·`meetPage.txt`(base64)를 다시 만든다 — 메뉴 안 '코드 복사' 버튼이 이걸 쓴다.
+- 차곡 쪽 코드: `MEET`·`renderMeet`·`meetDo`(클릭은 `data-action="meet" data-do="..."`), 서버 부르기 `meetApi(fn, ...args)` = POST `{fn,args}` (text/plain 이라 사전 요청 없음).
+  서버 함수: ping · createPoll · loadPoll · summaries · adminUpdate · adminDeleteResponse.
+- 저장: `S.settings.meet = { url, list:[{id,key,title,at}] }` (백업 파일에 함께 들어감). `MEET_DEFAULT_URL` 에 주소를 넣으면 설정 없이 그 주소로 연결.
+- 관리 키(key)가 있어야 결과·설정을 볼 수 있다. 참가자 링크에는 key 가 없다.
 
 ## OCR (그림 속 글자 읽기)
 Tesseract.js 5.1.1 + 한국어 tessdata_best 를 `src/assets/ocr*.txt` 로 넣었다. file:// 에서 blob 안의 importScripts 가 막혀서,

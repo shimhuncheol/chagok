@@ -556,6 +556,49 @@ kbd{font-family:inherit;font-size:11.5px;font-weight:700;border:1px solid var(--
 .pk-manual textarea{width:100%;min-height:110px}
 @media (max-width:900px){.pick-host{padding:8px 8px 90px}.pick-bar .pk-title{width:100%}}
 .seat-host .seat-wait{padding:60px 20px;text-align:center;color:var(--text3)}
+/* 📆 일정 협의 */
+.mt-hero{background:linear-gradient(180deg,var(--soft),var(--surface) 140px)}
+.mt-steps{display:grid;gap:10px;margin-top:6px}
+.mt-steps>div{display:flex;gap:12px;align-items:flex-start;line-height:1.55}
+.mt-steps b:first-child{flex:none;width:28px;height:28px;border-radius:50%;background:var(--primary);color:var(--on-primary);display:grid;place-items:center;font-size:14px}
+.mt-steps a{color:var(--primary);font-weight:700}
+.mt-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,320px),1fr));gap:14px}
+.mt-list .card{margin:0}
+.mt-it-t{font-size:18px;font-weight:800;letter-spacing:-.02em;margin-bottom:8px}
+.mt-it-m{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.badge.mt-cnt{background:var(--soft);color:var(--soft-text)}
+.badge.mt-closed{background:var(--text);color:var(--surface)}
+.mt-dchip.off{text-decoration:line-through;opacity:.45;border-style:dashed}
+.mt-chips{gap:6px}
+.mt-sw{padding:10px 0;border-top:1px solid var(--border)}
+.mt-sw:first-of-type{border-top:0}
+.mt-sw .switch{align-items:flex-start}
+.mt-sumcard{background:var(--soft);color:var(--soft-text)}
+.mt-sum{font-size:22px;font-weight:800;letter-spacing:-.02em}
+.mt-title{font-size:26px;font-weight:800;letter-spacing:-.03em;line-height:1.2}
+.mt-links{margin-top:14px;display:grid;gap:12px}
+.mt-rank{list-style:none;margin:0;padding:0}
+.mt-rank li{display:flex;gap:14px;align-items:center;padding:10px 0;border-top:1px solid var(--border)}
+.mt-rank li:first-child{border-top:0}
+.mt-rank .n{font-size:22px;font-weight:800;min-width:3.2em;text-align:right;color:var(--primary)}
+.mt-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface)}
+.mt-g{border-collapse:separate;border-spacing:3px;margin:6px}
+.mt-g th{font-size:12.5px;font-weight:700;white-space:nowrap;padding:3px 6px;color:var(--text2)}
+.mt-g thead th{line-height:1.25;text-align:center}
+.mt-g thead .d{font-size:14px;color:var(--text);font-weight:800}
+.mt-g thead th.sun .w{color:var(--deadline)}.mt-g thead th.sat .w{color:var(--event)}
+.mt-g tbody th{text-align:right;position:sticky;left:0;background:var(--surface);z-index:1}
+.mt-c{display:block;width:clamp(42px,7vw,60px);height:32px;border:0;border-radius:7px;cursor:pointer;font-weight:700;font-size:12px;color:var(--text);padding:0;background:color-mix(in srgb,var(--primary) calc(var(--h,0) * 100%),var(--surface2))}
+.mt-c.hi{color:var(--on-primary)}
+.mt-c.best{box-shadow:inset 0 0 0 3px var(--text)}
+.mt-c.pick{outline:3px solid var(--deadline);outline-offset:1px}
+.mt-names{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.mt-names span{background:var(--surface2);border:1px solid var(--border);border-radius:999px;padding:3px 10px;font-size:13.5px}
+.mt-who{border:2px solid var(--primary)!important}
+.mt-tbl{width:100%;border-collapse:collapse;font-size:14.5px}
+.mt-tbl th,.mt-tbl td{padding:9px 8px;border-top:1px solid var(--border);text-align:left}
+.mt-tbl th{color:var(--text3);font-size:13px;border-top:0}
+.mt-tbl .r{text-align:right;white-space:nowrap}
 @media (max-width:900px){.seat-host{padding:8px 10px 90px}.seat-host iframe{height:calc(100vh - 170px);min-height:560px}}
 .topbar{max-width:1080px;margin:0 auto;padding:30px 20px 6px;display:flex;align-items:center;gap:14px}
 .page-title{font-size:34px;font-weight:800;letter-spacing:-.035em;color:var(--text)}
@@ -942,6 +985,7 @@ html[data-theme="aurora"] .memo.c-purple{background:linear-gradient(135deg,rgba(
     <button class="tab" data-tab="school" type="button"><span class="ti">🏫</span><span class="tl">학교 정보</span></button>
     <button class="tab" data-tab="seats" type="button"><span class="ti">🪑</span><span class="tl">자리 배치</span></button>
     <button class="tab" data-tab="pick" type="button"><span class="ti">🏃</span><span class="tl">달리기 뽑기</span></button>
+    <button class="tab" data-tab="meet" type="button"><span class="ti">📆</span><span class="tl">일정 협의</span></button>
     <button class="tab" data-tab="memo" type="button"><span class="ti">📝</span><span class="tl">메모</span></button>
     <button class="tab" data-tab="backup" type="button"><span class="ti">⚙️</span><span class="tl">백업·정리</span></button>
   </nav>
@@ -1885,10 +1929,10 @@ function setLogoFromFile(file) {
   img.onerror = () => { URL.revokeObjectURL(url); toast('그림을 열지 못했어요.'); };
   img.src = url;
 }
-const APP_VERSION = '1.7';
+const APP_VERSION = '1.8';
 const HOME_URL = 'https://shimhuncheol.github.io/chagok/';
-const PAGE_TITLE = { input: '자료 넣기', review: '확인하기', todo: '할 일 보기', library: '자료함', school: '학교 정보', seats: '자리 배치', pick: '달리기 뽑기', memo: '메모', backup: '백업·정리' };
-const TABS = ['input', 'review', 'todo', 'library', 'school', 'seats', 'pick', 'memo', 'backup'];
+const PAGE_TITLE = { input: '자료 넣기', review: '확인하기', todo: '할 일 보기', library: '자료함', school: '학교 정보', seats: '자리 배치', pick: '달리기 뽑기', meet: '일정 협의', memo: '메모', backup: '백업·정리' };
+const TABS = ['input', 'review', 'todo', 'library', 'school', 'seats', 'pick', 'meet', 'memo', 'backup'];
 const IS_MAC = /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent || '');
 const KLABEL = IS_MAC ? '⌘ K' : 'Ctrl K';
 function greetWord() { const h = new Date().getHours(); return h >= 5 && h < 11 ? '좋은 아침이에요' : h >= 11 && h < 17 ? '좋은 오후예요' : h >= 17 && h < 22 ? '좋은 저녁이에요' : '늦게까지 수고 많으세요'; }
@@ -2345,13 +2389,13 @@ function render() {
   const pc = S.pending.length; const rc = $('#reviewCnt'); rc.textContent = pc; rc.classList.toggle('hidden', !pc);
   document.querySelector('.tab[data-tab=review]').classList.toggle('hidden', !pc && UI.tab !== 'review');
   renderBanner();
-  const fn = { input: renderInput, review: renderReview, todo: renderTodo, library: renderLibrary, school: renderSchool, seats: () => '', pick: () => '', memo: renderMemo, backup: renderBackup }[UI.tab] || renderInput;
+  const fn = { input: renderInput, review: renderReview, todo: renderTodo, library: renderLibrary, school: renderSchool, seats: () => '', pick: () => '', meet: renderMeet, memo: renderMemo, backup: renderBackup }[UI.tab] || renderInput;
   main.innerHTML = fn();
   seatToggle(UI.tab === 'seats');
   pickToggle(UI.tab === 'pick');
   main.querySelectorAll('.memo-b').forEach(autoGrow);
   renderSticky();
-  $('#fab').classList.toggle('hidden', ['input', 'school', 'seats', 'pick', 'memo'].includes(UI.tab));
+  $('#fab').classList.toggle('hidden', ['input', 'school', 'seats', 'pick', 'meet', 'memo'].includes(UI.tab));
   moveTabInd(!UI.tabIndReady); UI.tabIndReady = true;
   animateSeg();
   const pageAnim = UI.anim === 'page';
@@ -3354,6 +3398,260 @@ function resultMsg(r) {
 }
 const pendingFiles = new Map();
 /* =========================================================
+   📆 일정 협의 — '모여요'(구글 Apps Script 웹앱)와 연결해 여러 사람이 되는 날짜·시간을 모아요.
+   차곡에서 인터넷이 필요한 유일한 메뉴예요. 선생님이 넣은 모여요 주소로만 연결하고,
+   차곡에는 '내가 만든 협의 목록(제목·관리 키)'만 저장해요. 응답은 모여요의 구글 시트에 있어요.
+   ========================================================= */
+const MEET_DEFAULT_URL = ''; // 기본 모여요 주소(…/exec). 넣어 두면 설정 없이 바로 써요.
+const MEET = { view: 'list', id: null, data: null, sums: {}, busy: false, err: '', focus: null, made: false, listLoaded: false, form: null, chips: '' };
+function meetCfg() { if (!S.settings.meet || typeof S.settings.meet !== 'object') S.settings.meet = { url: '', list: [] }; if (!Array.isArray(S.settings.meet.list)) S.settings.meet.list = []; return S.settings.meet; }
+function meetUrl() { return String(meetCfg().url || MEET_DEFAULT_URL || '').trim(); }
+function meetItem(id) { return meetCfg().list.find(x => x.id === id); }
+async function meetApi(fn, ...args) {
+  const url = meetUrl(); if (!url) throw new Error('먼저 모여요 주소를 넣어 주세요.');
+  if (navigator.onLine === false) throw new Error('인터넷에 연결되어 있지 않아요. 일정 협의는 인터넷이 있어야 해요.');
+  let r, j;
+  try { r = await fetch(url, { method: 'POST', body: JSON.stringify({ fn, args }) }); } catch (e) { throw new Error('모여요에 연결하지 못했어요. 주소와 인터넷 연결을 확인해 주세요.'); }
+  try { j = await r.json(); } catch (e) { throw new Error('모여요 주소가 맞는지 확인해 주세요. 웹 앱 배포 주소(…/exec)여야 해요.'); }
+  if (!j || !j.ok) throw new Error((j && j.error) || '문제가 생겼어요. 잠시 뒤 다시 해 주세요.');
+  return j.data;
+}
+const mtPad = n => String(n).padStart(2, '0');
+const mtYmd = d => d.getFullYear() + '-' + mtPad(d.getMonth() + 1) + '-' + mtPad(d.getDate());
+const mtPD = s => { const [y, m, d] = String(s).split('-').map(Number); return new Date(y, m - 1, d); };
+const mtFD = s => { const d = mtPD(s); return `${d.getMonth() + 1}/${d.getDate()} (${WD[d.getDay()]})`; };
+const mtFDT = ms => { const d = new Date(ms); return `${d.getMonth() + 1}월 ${d.getDate()}일 (${WD[d.getDay()]}) ${mtPad(d.getHours())}:${mtPad(d.getMinutes())}`; };
+const mtMin = t => { const [h, m] = t.split(':').map(Number); return h * 60 + m; };
+const mtHM = m => mtPad(Math.floor(m / 60)) + ':' + mtPad(m % 60);
+const mtLabel = (k, iv) => { const [d, t] = k.split('T'); return mtFD(d) + ' ' + (t ? t + '–' + mtHM(mtMin(t) + (iv || 60)) : '종일'); };
+const mtLinks = id => { const u = meetUrl(), it = meetItem(id) || {}; return { join: `${u}?p=${id}`, result: `${u}?p=${id}&view=result`, admin: `${u}?p=${id}&k=${it.key || ''}` }; };
+function mtB64(id) { const el = document.getElementById(id); if (!el) return ''; const bin = atob(el.textContent.trim()); return new TextDecoder().decode(Uint8Array.from(bin, c => c.charCodeAt(0))); }
+function mtBadges(p) {
+  const out = [];
+  if (!p.open) out.push('<span class="badge mt-closed">마감됨</span>');
+  else if (p.deadline) { const left = p.deadline - Date.now(), dd = Math.floor(left / 864e5), hh = Math.floor(left / 36e5); out.push(`<span class="badge deadline">마감 ${esc(mtFDT(p.deadline))} · ${dd >= 1 ? dd + '일 남음' : hh >= 1 ? hh + '시간 남음' : '곧 마감'}</span>`); }
+  else out.push('<span class="badge">마감 날짜 없음</span>');
+  out.push(`<span class="badge mt-cnt">응답 ${Number(p.count) || 0}명</span>`);
+  return out.join(' ');
+}
+function mtLinkRow(label, url, note) {
+  return `<div class="mt-link"><label class="fl">${label}</label>${note ? `<div class="muted small" style="margin:-2px 0 6px">${note}</div>` : ''}<div class="row"><input class="inp grow" readonly value="${esc(url)}" aria-label="${label}"><button class="btn pri sm" data-action="meet" data-do="copy" data-url="${esc(url)}">📋 복사</button><a class="btn line sm" href="${esc(url)}" target="_blank" rel="noopener">열기</a></div></div>`;
+}
+
+/* ---------- 화면 ---------- */
+function renderMeet() {
+  if (!meetUrl() || MEET.view === 'setup') return meetSetupHtml();
+  if (MEET.view === 'new') return meetFormHtml();
+  if (MEET.view === 'poll') return meetPollHtml();
+  return meetListHtml();
+}
+function meetSetupHtml() {
+  const has = !!meetUrl(), mine = String(meetCfg().url || '').trim();
+  return `<div class="card mt-hero"><h2>📆 일정 협의는 이렇게 돌아가요</h2>
+    <p class="desc">협의 날짜·시간 범위를 정해 링크를 보내면, 선생님들이 로그인 없이 이름을 쓰고 되는 시간을 골라요. 여러 사람의 응답을 모아야 해서 구글의 <b>모여요 웹 앱</b>과 연결해서 써요. 차곡의 다른 메뉴는 지금처럼 인터넷 없이 그대로예요.</p>
+    <div class="mt-steps">
+      <div><b>1</b><span>구글 계정으로 <a href="https://script.google.com" target="_blank" rel="noopener">script.google.com</a> → <b>새 프로젝트</b>를 만들어요.</span></div>
+      <div><b>2</b><span><b>Code.gs</b>에 아래 첫 번째 코드를 붙여 넣고, <b>＋ → HTML</b>로 이름이 <b>index</b>인 파일을 만들어 두 번째 코드를 붙여 넣어요.</span></div>
+      <div><b>3</b><span><b>배포 → 새 배포 → 웹 앱</b>: 실행은 <b>나</b>, 액세스 권한은 <b>모든 사용자</b>로 하고 권한을 허용해요.</span></div>
+      <div><b>4</b><span>나온 웹 앱 주소(…/exec)를 아래 칸에 붙여 넣고 <b>연결하기</b>를 눌러요.</span></div>
+    </div>
+    <div class="row" style="margin-top:14px"><button class="btn line" data-action="meet" data-do="code-gs">📋 첫 번째 코드 (Code.gs) 복사</button><button class="btn line" data-action="meet" data-do="code-html">📋 두 번째 코드 (index) 복사</button></div>
+  </div>
+  <div class="card"><h2>🔗 모여요 주소</h2><p class="desc">${MEET_DEFAULT_URL ? '비워 두면 기본 모여요 주소로 연결돼요. 내 구글에 따로 배포했다면 그 주소를 넣으세요.' : '배포한 웹 앱 주소를 넣으세요. 이 주소는 이 브라우저에만 저장돼요.'}</p>
+    <div class="row"><input class="inp grow" id="mtUrl" placeholder="https://script.google.com/macros/s/…/exec" value="${esc(mine)}"><button class="btn pri" data-action="meet" data-do="url-save">연결하기</button>${has && MEET.view === 'setup' ? '<button class="btn line" data-action="meet" data-do="list">목록으로</button>' : ''}</div>
+    <p class="muted small" style="margin-top:10px">응답(이름·되는 시간)은 모여요를 배포한 구글 계정의 시트 '모여요 응답 데이터'에 쌓여요. 차곡에는 내가 만든 협의 목록만 남아요.</p>
+  </div>`;
+}
+function meetListHtml() {
+  const list = meetCfg().list.slice().sort((a, b) => (b.at || 0) - (a.at || 0));
+  if (!MEET.listLoaded && list.length) setTimeout(meetLoadList, 0);
+  let h = `<div class="toolbar"><span class="muted small">링크 하나로 여러 선생님이 되는 날짜와 시간을 모아요. 인터넷이 있어야 해요.</span>
+    <div class="row"><button class="btn line sm" data-action="meet" data-do="refresh-list">↻ 새로고침</button><button class="btn line sm" data-action="meet" data-do="import">🔗 링크로 가져오기</button><button class="btn line sm" data-action="meet" data-do="setup">⚙ 모여요 주소</button><button class="btn pri sm" data-action="meet" data-do="new">+ 새 일정 협의</button></div></div>`;
+  if (MEET.err) h += `<div class="banner warn" style="margin:0 0 14px">⚠️ ${esc(MEET.err)}</div>`;
+  if (!list.length) return h + `<div class="card"><div class="empty"><div class="big">📆</div>아직 만든 일정 협의가 없어요.<br><span class="small">날짜·시간 범위를 정하면 보낼 링크가 바로 만들어져요.</span><div style="margin-top:14px"><button class="btn pri" data-action="meet" data-do="new">+ 첫 일정 협의 만들기</button></div></div></div>`;
+  return h + `<div class="mt-list">${list.map(it => {
+    const s = MEET.sums[it.id];
+    const meta = !s ? `<span class="muted small">${MEET.busy ? '불러오는 중…' : '응답 수를 아직 못 불러왔어요'}</span>` : s.missing ? '<span class="muted small">모여요에서 찾을 수 없어요 (주소가 바뀌었거나 지워졌어요)</span>' : mtBadges(s) + (s.first ? ` <span class="muted small">${esc(mtFD(s.first))}${s.last && s.last !== s.first ? ' ~ ' + esc(mtFD(s.last)) : ''}</span>` : '');
+    return `<div class="card mt-item" data-mid="${esc(it.id)}"><div class="mt-it-t">${esc((s && s.title) || it.title)}</div><div class="mt-it-m">${meta}</div>
+      <div class="row" style="margin-top:12px"><button class="btn pri sm" data-action="meet" data-do="open" data-id="${esc(it.id)}">결과 보기</button><button class="btn line sm" data-action="meet" data-do="copy" data-url="${esc(mtLinks(it.id).join)}">📋 참가자 링크</button><span class="sp"></span><button class="icon-btn" data-action="meet" data-do="forget" data-id="${esc(it.id)}" title="목록에서 빼기" aria-label="목록에서 빼기">🗑</button></div></div>`;
+  }).join('')}</div>`;
+}
+async function meetLoadList() {
+  const list = meetCfg().list; MEET.listLoaded = true; if (!list.length) return;
+  MEET.busy = true; MEET.err = '';
+  try { const arr = await meetApi('summaries', list.map(x => ({ id: x.id, key: x.key }))); MEET.sums = {}; (arr || []).forEach(s => { MEET.sums[s.id] = s; if (s.title) { const it = meetItem(s.id); if (it) it.title = s.title; } }); persist(); }
+  catch (e) { MEET.err = e.message; }
+  MEET.busy = false; if (UI.tab === 'meet' && MEET.view === 'list') render();
+}
+
+/* 새로 만들기 */
+function meetNewForm() {
+  const t = new Date(), e = new Date(), dl = new Date(); e.setDate(t.getDate() + 13); dl.setDate(t.getDate() + 3);
+  return { title: '', note: '', ds: mtYmd(t), de: mtYmd(e), wd: [1, 2, 3, 4, 5], off: [], iv: '60', ts: '09:00', te: '18:00', dl: mtYmd(dl) + 'T18:00', hl: true, sh: true };
+}
+function meetCalc(f) {
+  const all = [];
+  if (f.ds && f.de && f.ds <= f.de) for (let d = mtPD(f.ds); mtYmd(d) <= f.de && all.length < 120; d.setDate(d.getDate() + 1)) if (f.wd.includes(d.getDay())) all.push(mtYmd(d));
+  const iv = +f.iv, times = [];
+  if (iv) for (let m = mtMin(f.ts); m + iv <= mtMin(f.te); m += iv) times.push(mtHM(m));
+  return { all, dates: all.filter(d => !f.off.includes(d)), iv, times };
+}
+function meetChipsHtml(f, r) { return r.all.length ? r.all.map(d => `<button type="button" class="btn xs line mt-dchip ${f.off.includes(d) ? 'off' : ''}" data-action="meet" data-do="off" data-d="${d}">${mtFD(d)}</button>`).join('') : '<span class="muted small">날짜 범위를 확인해 주세요.</span>'; }
+function meetFormHtml() {
+  const f = MEET.form || (MEET.form = meetNewForm()), r = meetCalc(f);
+  const opt = []; for (let m = 360; m <= 1440; m += 30) opt.push(mtHM(m));
+  const sel = (k) => `<select class="inp" data-f="${k}">${opt.map(o => `<option ${o === f[k] ? 'selected' : ''}>${o}</option>`).join('')}</select>`;
+  MEET.chips = meetChipsHtml(f, r);
+  return `<div class="toolbar"><button class="btn line sm" data-action="meet" data-do="list">← 목록</button><span class="muted small">링크를 만들면 목록에 저장돼요.</span></div>
+  <div id="mtForm">
+  <div class="card"><h2>1. 무엇을 정하나요?</h2><div class="form-grid">
+    <div><label class="fl">제목</label><input class="inp" data-f="title" maxlength="80" placeholder="예: 12월 학년 협의회" value="${esc(f.title)}"></div>
+    <div><label class="fl">안내 메모 (선택)</label><input class="inp" data-f="note" maxlength="300" placeholder="예: 1시간 정도 걸려요. 장소는 4층 협의실" value="${esc(f.note)}"></div></div></div>
+  <div class="card"><h2>2. 날짜 범위</h2><div class="form-grid">
+    <div><label class="fl">시작일</label><input class="inp" type="date" data-f="ds" value="${f.ds}"></div>
+    <div><label class="fl">종료일</label><input class="inp" type="date" data-f="de" value="${f.de}"></div></div>
+    <label class="fl" style="margin-top:14px">포함할 요일</label>
+    <div class="row mt-wd">${[1, 2, 3, 4, 5, 6, 0].map(w => `<button type="button" class="btn sm ${f.wd.includes(w) ? 'pri' : 'line'}" data-action="meet" data-do="wd" data-w="${w}" aria-pressed="${f.wd.includes(w)}">${WD[w]}</button>`).join('')}</div>
+    <label class="fl" style="margin-top:14px">만들어질 날짜 <span class="muted">(빼고 싶은 날을 누르세요)</span></label>
+    <div class="row mt-chips" id="mtChips">${MEET.chips}</div></div>
+  <div class="card"><h2>3. 시간 범위와 간격</h2><div class="form-grid mt-3">
+    <div><label class="fl">시간 간격</label><select class="inp" data-f="iv">${[['30', '30분'], ['60', '1시간'], ['90', '1시간 30분'], ['120', '2시간'], ['0', '시간 없이 날짜만']].map(([v, n]) => `<option value="${v}" ${f.iv === v ? 'selected' : ''}>${n}</option>`).join('')}</select></div>
+    <div class="mt-tm" ${r.iv ? '' : 'hidden'}><label class="fl">시작 시각</label>${sel('ts')}</div>
+    <div class="mt-tm" ${r.iv ? '' : 'hidden'}><label class="fl">종료 시각</label>${sel('te')}</div></div></div>
+  <div class="card"><h2>4. 마감과 보기 방법</h2>
+    <div class="form-grid"><div><label class="fl">응답 마감</label><input class="inp" type="datetime-local" data-f="dl" value="${f.dl}"><div class="muted small" style="margin-top:6px">비워 두면 직접 마감할 때까지 열려 있어요.</div></div></div>
+    <div class="mt-sw"><label class="switch"><input type="checkbox" data-f="hl" ${f.hl ? 'checked' : ''}><span class="sl"></span><span class="sw-t"><b>많이 고른 시간 강조하기</b><span class="muted small">참가자 화면에서 다른 사람이 많이 고른 칸일수록 진하게 보여요. 끄면 빈 칸표만 보여요.</span></span></label></div>
+    <div class="mt-sw"><label class="switch"><input type="checkbox" data-f="sh" ${f.sh ? 'checked' : ''}><span class="sl"></span><span class="sw-t"><b>결과 함께 보기</b><span class="muted small">참가자도 결과 링크로 누가 언제 되는지 볼 수 있어요. 끄면 나만 봐요.</span></span></label></div>
+  </div>
+  <div class="card mt-sumcard"><div class="row"><div><div class="mt-sum" id="mtSum"></div><div class="muted small" id="mtSum2"></div></div><span class="sp"></span><button class="btn pri big-btn" data-action="meet" data-do="create">🔗 링크 만들기</button></div></div>
+  </div>`;
+}
+function meetFormRefresh() {
+  const f = MEET.form; if (!f || !$('#mtForm')) return;
+  const r = meetCalc(f), ch = meetChipsHtml(f, r);
+  if (ch !== MEET.chips) { MEET.chips = ch; $('#mtChips').innerHTML = ch; }
+  document.querySelectorAll('#mtForm .mt-tm').forEach(x => { x.hidden = !r.iv; });
+  const cells = r.dates.length * Math.max(1, r.times.length);
+  $('#mtSum').textContent = r.iv ? `날짜 ${r.dates.length}일 × 시간 ${r.times.length}칸 = ${cells}칸` : `날짜 ${r.dates.length}일 (시간 없이)`;
+  $('#mtSum2').textContent = r.dates.length > 62 ? '날짜는 62일까지만 만들 수 있어요.' : r.iv && !r.times.length ? '종료 시각이 시작 시각보다 늦어야 해요.' : r.iv ? `칸 하나는 ${r.iv}분이에요.` : '참가자는 되는 날짜만 고르면 돼요.';
+}
+main.addEventListener('input', e => { const i = e.target.closest('#mtForm [data-f]'); if (!i || !MEET.form) return; MEET.form[i.dataset.f] = i.type === 'checkbox' ? i.checked : i.value; meetFormRefresh(); });
+main.addEventListener('change', e => { const i = e.target.closest('#mtForm [data-f]'); if (!i || !MEET.form) return; MEET.form[i.dataset.f] = i.type === 'checkbox' ? i.checked : i.value; meetFormRefresh(); });
+async function meetCreate(btn) {
+  const f = MEET.form, r = meetCalc(f), title = (f.title || '').trim();
+  if (!title) { const t = document.querySelector('#mtForm [data-f=title]'); t && t.focus(); return toast('제목을 먼저 적어 주세요.'); }
+  if (!r.dates.length) return toast('날짜를 하나 이상 남겨 주세요.');
+  if (r.dates.length > 62) return toast('날짜는 62일까지만 만들 수 있어요.');
+  if (r.iv && !r.times.length) return toast('시간 범위를 확인해 주세요.');
+  const deadline = f.dl ? new Date(f.dl).getTime() : null;
+  if (deadline && deadline < Date.now()) return toast('마감 시각이 이미 지났어요.');
+  btn.disabled = true; btn.textContent = '만드는 중…';
+  try {
+    const res = await meetApi('createPoll', { title, note: f.note, dates: r.dates, times: r.times, interval: r.iv, deadline, highlight: f.hl, share: f.sh });
+    meetCfg().list.push({ id: res.id, key: res.key, title, at: Date.now() });
+    MEET.form = null; MEET.made = true; MEET.listLoaded = false;
+    meetOpen(res.id); toast('링크를 만들었어요. 참가자 링크를 보내세요!');
+  } catch (e) { toast(e.message); btn.disabled = false; btn.textContent = '🔗 링크 만들기'; }
+}
+
+/* 결과 · 관리 */
+function meetOpen(id) { MEET.view = 'poll'; MEET.id = id; MEET.data = null; MEET.focus = null; MEET.err = ''; commit(); meetLoadPoll(); }
+async function meetLoadPoll(msg) {
+  const it = meetItem(MEET.id); if (!it) { MEET.view = 'list'; return render(); }
+  try { MEET.data = await meetApi('loadPoll', it.id, it.key); MEET.err = ''; if (MEET.data.poll && MEET.data.poll.title !== it.title) { it.title = MEET.data.poll.title; persist(); } if (msg) toast(msg); }
+  catch (e) { MEET.err = e.message; }
+  if (UI.tab === 'meet' && MEET.view === 'poll') render();
+}
+function meetGridHtml(poll, counts, tot, max) {
+  const ts = poll.times.length ? poll.times : [null];
+  const head = poll.dates.map(d => { const w = mtPD(d).getDay(); return `<th class="${w === 0 ? 'sun' : w === 6 ? 'sat' : ''}"><span class="d">${mtPD(d).getMonth() + 1}/${mtPD(d).getDate()}</span><br><span class="w">${WD[w]}</span></th>`; }).join('');
+  const body = ts.map(t => `<tr><th>${t || '종일'}</th>${poll.dates.map(d => { const k = t ? d + 'T' + t : d, n = counts[k] || 0, h = tot ? n / tot : 0;
+    return `<td><button type="button" class="mt-c${h > .55 ? ' hi' : ''}${n && n === max ? ' best' : ''}${MEET.focus === k ? ' pick' : ''}" data-action="meet" data-do="cell" data-k="${k}" style="--h:${h.toFixed(2)}" aria-label="${esc(mtLabel(k, poll.interval))}, ${n}명 가능">${n || ''}</button></td>`; }).join('')}</tr>`).join('');
+  return `<div class="mt-wrap"><table class="mt-g"><thead><tr><th></th>${head}</tr></thead><tbody>${body}</tbody></table></div>`;
+}
+function meetPollHtml() {
+  const it = meetItem(MEET.id); if (!it) { MEET.view = 'list'; return meetListHtml(); }
+  const top = `<div class="toolbar"><button class="btn line sm" data-action="meet" data-do="list">← 목록</button><div class="row"><button class="btn line sm" data-action="meet" data-do="reload">↻ 새로고침</button></div></div>`;
+  const d = MEET.data;
+  if (!d) return top + (MEET.err ? `<div class="card"><div class="empty"><div class="big">📡</div>${esc(MEET.err)}<div style="margin-top:14px"><button class="btn pri" data-action="meet" data-do="reload">다시 불러오기</button></div></div></div>` : `<div class="card"><div class="empty"><div class="big">⏳</div>「${esc(it.title)}」 결과를 불러오는 중이에요…</div></div>`);
+  const poll = d.poll, list = (d.responses || []).slice().sort((a, b) => b.at - a.at), counts = d.counts || {}, tot = list.length, L = mtLinks(poll.id);
+  const max = Math.max(0, ...Object.values(counts));
+  const ranked = Object.keys(counts).filter(k => counts[k] > 0).sort((a, b) => counts[b] - counts[a] || (a < b ? -1 : 1)).slice(0, 5);
+  const no = k => list.filter(r => !r.slots.includes(k)).map(r => r.name);
+  let who = '';
+  if (MEET.focus) { const yes = list.filter(r => r.slots.includes(MEET.focus)).map(r => r.name), nn = no(MEET.focus);
+    who = `<div class="card mt-who"><h2>${esc(mtLabel(MEET.focus, poll.interval))}</h2><div class="form-grid"><div><b>되는 사람 ${yes.length}명</b><div class="mt-names">${yes.map(n => `<span>${esc(n)}</span>`).join('') || '<span>없음</span>'}</div></div><div><b>안 되는 사람 ${nn.length}명</b><div class="mt-names">${nn.map(n => `<span>${esc(n)}</span>`).join('') || '<span>없음</span>'}</div></div></div></div>`; }
+  const dlv = poll.deadline ? (() => { const x = new Date(poll.deadline); return mtYmd(x) + 'T' + mtPad(x.getHours()) + ':' + mtPad(x.getMinutes()); })() : '';
+  return top + (MEET.err ? `<div class="banner warn" style="margin:0 0 14px">⚠️ ${esc(MEET.err)}</div>` : '') + `
+  ${MEET.made ? '<div class="banner okb" style="margin:0 0 14px">🎉 링크가 만들어졌어요! 아래 참가자 링크를 메신저·패들렛으로 보내세요.<span class="sp"></span><button class="btn sm line" data-action="meet" data-do="made-close">닫기</button></div>' : ''}
+  <div class="card"><div class="mt-title">${esc(poll.title)}</div>${poll.note ? `<p class="muted" style="margin:4px 0 0">${esc(poll.note)}</p>` : ''}<div class="row" style="margin-top:10px">${mtBadges({ open: poll.open, deadline: poll.deadline, count: d.count })}</div>
+    <div class="mt-links">${mtLinkRow('참가자에게 보낼 링크', L.join, '로그인 없이 이름만 쓰고 되는 시간을 골라요.')}${poll.share ? mtLinkRow('결과 공유 링크', L.result) : ''}</div></div>
+  <div class="card mt-best"><h2>🏆 가장 많이 되는 시간</h2>${tot ? `<ol class="mt-rank">${ranked.map(k => `<li><span class="n">${counts[k]}명</span><span><b>${esc(mtLabel(k, poll.interval))}</b>${counts[k] === tot ? ' <span class="badge new">전원 가능</span>' : ''}<br><span class="muted small">${no(k).length ? '안 되는 사람: ' + esc(no(k).join(', ')) : '모두 돼요'}</span></span></li>`).join('') || '<li>아직 고른 칸이 없어요.</li>'}</ol>` : '<p class="muted">아직 응답이 없어요. 참가자 링크를 보내 보세요.</p>'}</div>
+  <div class="card"><h2>🗓 전체 칸표</h2><p class="desc">진할수록 되는 사람이 많아요. 굵은 테두리는 가장 많은 칸이에요. 칸을 누르면 누가 되는지 보여요.</p>${meetGridHtml(poll, counts, tot, max)}</div>
+  ${who}
+  <div class="card"><h2>🙋 응답한 사람 ${tot}명</h2>${tot ? `<table class="mt-tbl"><thead><tr><th>이름</th><th class="r">고른 칸</th><th class="hide-m">제출 시각</th><th></th></tr></thead><tbody>${list.map(r => `<tr><td>${esc(r.name)}</td><td class="r">${r.slots.length}</td><td class="hide-m muted small">${r.at ? esc(mtFDT(r.at)) : ''}</td><td class="r"><button class="icon-btn" data-action="meet" data-do="del-resp" data-name="${esc(r.name)}" title="응답 지우기" aria-label="응답 지우기">🗑</button></td></tr>`).join('')}</tbody></table>` : '<p class="muted">아직 응답이 없어요.</p>'}</div>
+  <div class="card"><h2>⚙️ 설정</h2>
+    <div class="mt-sw"><label class="switch"><input type="checkbox" data-action="meet" data-do="set-hl" ${poll.highlight ? 'checked' : ''}><span class="sl"></span><span class="sw-t"><b>많이 고른 시간 강조하기</b><span class="muted small">참가자 화면에 다른 사람이 고른 인원을 진하기로 보여 줘요.</span></span></label></div>
+    <div class="mt-sw"><label class="switch"><input type="checkbox" data-action="meet" data-do="set-sh" ${poll.share ? 'checked' : ''}><span class="sl"></span><span class="sw-t"><b>결과 함께 보기</b><span class="muted small">참가자도 결과 공유 링크로 결과를 볼 수 있어요.</span></span></label></div>
+    <label class="fl" style="margin-top:14px">응답 마감</label><div class="row"><input class="inp" type="datetime-local" id="mtDl" value="${dlv}" style="max-width:280px"><button class="btn line sm" data-action="meet" data-do="set-dl">마감 시각 저장</button></div>
+    <div class="row" style="margin-top:16px"><button class="btn ${poll.closed ? 'pri' : 'danger-line'}" data-action="meet" data-do="set-close">${poll.closed ? '▶ 응답 다시 받기' : '⏹ 지금 바로 마감하기'}</button><span class="sp"></span><button class="btn line sm" data-action="meet" data-do="copy" data-url="${esc(L.admin)}" title="휴대폰 등 차곡 밖에서 관리할 때 쓰는 링크">📋 웹 관리자 링크</button><button class="btn line sm danger-line" data-action="meet" data-do="forget" data-id="${esc(poll.id)}">목록에서 빼기</button></div>
+  </div>`;
+}
+async function meetPatch(patch, msg) { const it = meetItem(MEET.id); if (!it) return; try { MEET.data = await meetApi('adminUpdate', it.id, it.key, patch); MEET.err = ''; render(); toast(msg); } catch (e) { toast(e.message); render(); } }
+function meetImport() {
+  openModal({ title: '링크로 가져오기', ok: '가져오기',
+    body: `<p class="muted small" style="margin:0 0 10px">모여요에서 만든 협의의 <b>관리자 링크</b>(주소에 &k= 가 있는 링크)를 붙여 넣으면 차곡 목록에 들어와요.</p><input class="inp" id="mtImp" placeholder="https://script.google.com/macros/s/…/exec?p=…&k=…">`,
+    onOpen: box => $('#mtImp', box).focus(),
+    onOk: box => {
+      let u; try { u = new URL($('#mtImp', box).value.trim()); } catch (e) { toast('링크 모양이 아니에요. 다시 확인해 주세요.'); return false; }
+      const p = u.searchParams.get('p'), k = u.searchParams.get('k');
+      if (!p || !k) { toast('관리자 링크가 아니에요. 주소에 &k= 가 있는 링크를 넣어 주세요.'); return false; }
+      if ((u.origin + u.pathname) !== meetUrl().split('?')[0]) { toast('지금 연결된 모여요 주소에서 만든 협의만 가져올 수 있어요.'); return false; }
+      if (!meetItem(p)) meetCfg().list.push({ id: p, key: k, title: '가져온 일정 협의', at: Date.now() });
+      MEET.made = false; meetOpen(p);
+    } });
+}
+async function meetDo(el) {
+  const d = el.dataset.do;
+  switch (d) {
+    case 'copy': copyText(el.dataset.url).then(ok => toast(ok ? '링크를 복사했어요. 메신저에 붙여 넣으세요.' : '복사하지 못했어요. 칸을 눌러 직접 복사해 주세요.')); break;
+    case 'code-gs': copyText(mtB64('meetGs')).then(ok => toast(ok ? 'Code.gs 코드를 복사했어요.' : '복사하지 못했어요.')); break;
+    case 'code-html': copyText(mtB64('meetPage')).then(ok => toast(ok ? 'index 코드를 복사했어요.' : '복사하지 못했어요.')); break;
+    case 'setup': MEET.view = 'setup'; render(); break;
+    case 'list': MEET.view = 'list'; MEET.made = false; MEET.focus = null; MEET.err = ''; render(); break;
+    case 'refresh-list': MEET.listLoaded = false; MEET.sums = {}; render(); break;
+    case 'new': MEET.view = 'new'; if (!MEET.form) MEET.form = meetNewForm(); render(); setTimeout(() => { meetFormRefresh(); const t = document.querySelector('#mtForm [data-f=title]'); t && t.focus(); }, 30); break;
+    case 'wd': { const w = +el.dataset.w, f = MEET.form, i = f.wd.indexOf(w); i < 0 ? f.wd.push(w) : f.wd.splice(i, 1); const on = f.wd.includes(w); el.classList.toggle('pri', on); el.classList.toggle('line', !on); el.setAttribute('aria-pressed', on); meetFormRefresh(); break; }
+    case 'off': { const f = MEET.form, i = f.off.indexOf(el.dataset.d); i < 0 ? f.off.push(el.dataset.d) : f.off.splice(i, 1); meetFormRefresh(); break; }
+    case 'create': meetCreate(el); break;
+    case 'open': MEET.made = false; meetOpen(el.dataset.id); break;
+    case 'reload': MEET.data = MEET.data || null; meetLoadPoll('최신 결과로 바꿨어요.'); break;
+    case 'made-close': MEET.made = false; render(); break;
+    case 'cell': MEET.focus = MEET.focus === el.dataset.k ? null : el.dataset.k; render(); if (MEET.focus) setTimeout(() => { const w = document.querySelector('.mt-who'); w && w.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }, 30); break;
+    case 'set-hl': meetPatch({ highlight: el.checked }, el.checked ? '많이 고른 시간을 강조해서 보여 줘요.' : '강조 없이 빈 칸표로 보여 줘요.'); break;
+    case 'set-sh': meetPatch({ share: el.checked }, el.checked ? '참가자도 결과를 볼 수 있어요.' : '결과는 나만 봐요.'); break;
+    case 'set-dl': { const v = ($('#mtDl') || {}).value; meetPatch({ deadline: v ? new Date(v).getTime() : null, closed: false }, v ? '마감 시각을 바꿨어요.' : '마감 날짜를 없앴어요.'); break; }
+    case 'set-close': meetPatch({ closed: !MEET.data.poll.closed }, MEET.data.poll.closed ? '다시 응답을 받아요.' : '마감했어요. 더는 제출할 수 없어요.'); break;
+    case 'del-resp': { const name = el.dataset.name, it = meetItem(MEET.id); if (!it) break;
+      if (!await confirmBox({ title: `${name} 님 응답을 지울까요?`, body: '모여요 시트에서도 지워져요. 되돌릴 수 없어요.', ok: '지우기', danger: true })) break;
+      try { MEET.data = await meetApi('adminDeleteResponse', it.id, it.key, name); render(); toast(`${name} 님 응답을 지웠어요.`); } catch (e) { toast(e.message); } break; }
+    case 'forget': { const id = el.dataset.id, cfg = meetCfg(), i = cfg.list.findIndex(x => x.id === id); if (i < 0) break;
+      const [x] = cfg.list.splice(i, 1); MEET.view = 'list'; MEET.data = null; commit();
+      toast('목록에서 뺐어요. 응답은 모여요 시트에 그대로 있어요.', () => { cfg.list.splice(i, 0, x); commit(); }); break; }
+    case 'import': meetImport(); break;
+    case 'url-save': {
+      const v = ($('#mtUrl') || {}).value.trim();
+      if (v && !/^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec$/.test(v.split('?')[0])) { toast('웹 앱 주소는 https://script.google.com/macros/s/…/exec 모양이에요.'); break; }
+      if (!v && !MEET_DEFAULT_URL) { toast('주소를 넣어 주세요.'); break; }
+      const prev = meetCfg().url; meetCfg().url = v.split('?')[0];
+      el.disabled = true; el.textContent = '확인하는 중…';
+      try { const r = await meetApi('ping'); if (!r || r.app !== 'moyeoyo') throw new Error('모여요가 아닌 주소예요.'); MEET.view = 'list'; MEET.listLoaded = false; commit(); toast('모여요와 연결했어요! 이제 일정 협의를 만들 수 있어요.'); }
+      catch (e) { meetCfg().url = prev; el.disabled = false; el.textContent = '연결하기'; toast(e.message.includes('모여요') ? e.message : '연결하지 못했어요. 배포 설정(액세스: 모든 사용자)과 주소를 확인해 주세요.'); }
+      break; }
+  }
+}
+
+/* =========================================================
    붙여넣기·파일 → 자동 정리(미리보기) → [입력]으로 저장
    ========================================================= */
 function autoName(text, fallback) {
@@ -3961,6 +4259,7 @@ function onAction(e) {
     case 'school-field-del': { const r = findSchoolField(el.closest('[data-fid]').dataset.fid); if (!r) break; const i = r.g.fields.indexOf(r.f); r.g.fields.splice(i, 1); commit(); toast(`'${r.f.label || '항목'}'을(를) 지웠어요.`, () => { r.g.fields.splice(i, 0, r.f); commit(); }); break; }
     case 'school-group-add': { const g = { id: uid(), name: '새 묶음', icon: '📁', fields: [{ id: uid(), label: '', value: '' }] }; schoolData().groups.push(g); commit(); setTimeout(() => { const n = document.querySelector(`[data-gid="${g.id}"] .sg-name`); if (n) { n.focus(); n.select(); n.scrollIntoView({ behavior: 'smooth', block: 'center' }); } }, 40); break; }
     case 'school-group-del': { const gs = schoolData().groups; const i = gs.findIndex(x => x.id === el.closest('[data-gid]').dataset.gid); if (i < 0) break; const [g] = gs.splice(i, 1); commit(); toast(`'${g.name}' 묶음을 지웠어요.`, () => { gs.splice(i, 0, g); commit(); }); break; }
+    case 'meet': meetDo(el); break;
     case 'memo-new': newMemo(); break;
     case 'memo-img': { const mid = el.closest('[data-mid]').dataset.mid; pickImages(fs => addMemoImages(mid, fs)); break; }
     case 'memo-color': { const m = S.memos.find(x => x.id === el.closest('[data-mid]').dataset.mid); if (m) { m.color = el.dataset.c; m.updatedAt = nowIso(); const card = el.closest('.memo'); card.className = card.className.replace(/\bc-\w+/, 'c-' + m.color); card.querySelectorAll('.mc').forEach(b => b.classList.toggle('on', b === el)); persist(); } break; }
@@ -4105,5 +4404,8 @@ async function doInstall() {
 <script type="text/plain" id="ocrWorker">{{asset:ocrWorker}}</script>
 <script type="text/plain" id="ocrCore">{{asset:ocrCore}}</script>
 <script type="text/plain" id="ocrKor">{{asset:ocrKor}}</script>
+<!-- 일정 협의: 모여요(구글 Apps Script) 코드 — 선생님이 직접 배포할 때 복사해 가요 (base64) -->
+<script type="text/plain" id="meetGs">{{asset:meetGs}}</script>
+<script type="text/plain" id="meetPage">{{asset:meetPage}}</script>
 </body>
 </html>
