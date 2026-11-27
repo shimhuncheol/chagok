@@ -1929,7 +1929,7 @@ function setLogoFromFile(file) {
   img.onerror = () => { URL.revokeObjectURL(url); toast('그림을 열지 못했어요.'); };
   img.src = url;
 }
-const APP_VERSION = '1.8';
+const APP_VERSION = '1.9';
 const HOME_URL = 'https://shimhuncheol.github.io/chagok/';
 const PAGE_TITLE = { input: '자료 넣기', review: '확인하기', todo: '할 일 보기', library: '자료함', school: '학교 정보', seats: '자리 배치', pick: '달리기 뽑기', meet: '일정 협의', memo: '메모', backup: '백업·정리' };
 const TABS = ['input', 'review', 'todo', 'library', 'school', 'seats', 'pick', 'meet', 'memo', 'backup'];
@@ -3425,6 +3425,14 @@ const mtMin = t => { const [h, m] = t.split(':').map(Number); return h * 60 + m;
 const mtHM = m => mtPad(Math.floor(m / 60)) + ':' + mtPad(m % 60);
 const mtLabel = (k, iv) => { const [d, t] = k.split('T'); return mtFD(d) + ' ' + (t ? t + '–' + mtHM(mtMin(t) + (iv || 60)) : '종일'); };
 const mtLinks = id => { const u = meetUrl(), it = meetItem(id) || {}; return { join: `${u}?p=${id}`, result: `${u}?p=${id}&view=result`, admin: `${u}?p=${id}&k=${it.key || ''}` }; };
+/* 지금 차곡 디자인(색·글꼴)을 모여요 참가자 화면에도 입혀요 */
+function meetTheme() {
+  const cs = getComputedStyle(document.documentElement), vars = {};
+  ['--bg', '--surface', '--surface2', '--text', '--text2', '--text3', '--border', '--primary', '--primary-hover', '--on-primary', '--soft', '--soft-text', '--mark', '--deadline', '--deadline-soft', '--radius', '--radius-sm', '--btn-radius', '--shadow', '--tint1', '--tint2', '--tint3']
+    .forEach(k => { const v = cs.getPropertyValue(k).trim(); vars[k] = v || (k.startsWith('--tint') ? 'transparent' : ''); if (!vars[k]) delete vars[k]; });
+  const th = S.settings.theme;
+  return { vars, font: th === 'edufine' ? 'nanum' : th === 'neis' ? 'noto' : 'paperlogy' };
+}
 function mtB64(id) { const el = document.getElementById(id); if (!el) return ''; const bin = atob(el.textContent.trim()); return new TextDecoder().decode(Uint8Array.from(bin, c => c.charCodeAt(0))); }
 function mtBadges(p) {
   const out = [];
@@ -3548,7 +3556,7 @@ async function meetCreate(btn) {
   if (deadline && deadline < Date.now()) return toast('마감 시각이 이미 지났어요.');
   btn.disabled = true; btn.textContent = '만드는 중…';
   try {
-    const res = await meetApi('createPoll', { title, note: f.note, dates: r.dates, times: r.times, interval: r.iv, deadline, highlight: f.hl, share: f.sh });
+    const res = await meetApi('createPoll', { title, note: f.note, dates: r.dates, times: r.times, interval: r.iv, deadline, highlight: f.hl, share: f.sh, theme: meetTheme() });
     meetCfg().list.push({ id: res.id, key: res.key, title, at: Date.now() });
     MEET.form = null; MEET.made = true; MEET.listLoaded = false;
     meetOpen(res.id); toast('링크를 만들었어요. 참가자 링크를 보내세요!');
@@ -3595,7 +3603,7 @@ function meetPollHtml() {
     <div class="mt-sw"><label class="switch"><input type="checkbox" data-action="meet" data-do="set-hl" ${poll.highlight ? 'checked' : ''}><span class="sl"></span><span class="sw-t"><b>많이 고른 시간 강조하기</b><span class="muted small">참가자 화면에 다른 사람이 고른 인원을 진하기로 보여 줘요.</span></span></label></div>
     <div class="mt-sw"><label class="switch"><input type="checkbox" data-action="meet" data-do="set-sh" ${poll.share ? 'checked' : ''}><span class="sl"></span><span class="sw-t"><b>결과 함께 보기</b><span class="muted small">참가자도 결과 공유 링크로 결과를 볼 수 있어요.</span></span></label></div>
     <label class="fl" style="margin-top:14px">응답 마감</label><div class="row"><input class="inp" type="datetime-local" id="mtDl" value="${dlv}" style="max-width:280px"><button class="btn line sm" data-action="meet" data-do="set-dl">마감 시각 저장</button></div>
-    <div class="row" style="margin-top:16px"><button class="btn ${poll.closed ? 'pri' : 'danger-line'}" data-action="meet" data-do="set-close">${poll.closed ? '▶ 응답 다시 받기' : '⏹ 지금 바로 마감하기'}</button><span class="sp"></span><button class="btn line sm" data-action="meet" data-do="copy" data-url="${esc(L.admin)}" title="휴대폰 등 차곡 밖에서 관리할 때 쓰는 링크">📋 웹 관리자 링크</button><button class="btn line sm danger-line" data-action="meet" data-do="forget" data-id="${esc(poll.id)}">목록에서 빼기</button></div>
+    <div class="row" style="margin-top:16px"><button class="btn ${poll.closed ? 'pri' : 'danger-line'}" data-action="meet" data-do="set-close">${poll.closed ? '▶ 응답 다시 받기' : '⏹ 지금 바로 마감하기'}</button><span class="sp"></span><button class="btn line sm" data-action="meet" data-do="set-theme" title="참가자 화면 색과 글꼴을 지금 차곡 디자인으로 바꿔요">🎨 지금 차곡 디자인으로</button><button class="btn line sm" data-action="meet" data-do="copy" data-url="${esc(L.admin)}" title="휴대폰 등 차곡 밖에서 관리할 때 쓰는 링크">📋 웹 관리자 링크</button><button class="btn line sm danger-line" data-action="meet" data-do="forget" data-id="${esc(poll.id)}">목록에서 빼기</button></div>
   </div>`;
 }
 async function meetPatch(patch, msg) { const it = meetItem(MEET.id); if (!it) return; try { MEET.data = await meetApi('adminUpdate', it.id, it.key, patch); MEET.err = ''; render(); toast(msg); } catch (e) { toast(e.message); render(); } }
@@ -3632,6 +3640,7 @@ async function meetDo(el) {
     case 'set-hl': meetPatch({ highlight: el.checked }, el.checked ? '많이 고른 시간을 강조해서 보여 줘요.' : '강조 없이 빈 칸표로 보여 줘요.'); break;
     case 'set-sh': meetPatch({ share: el.checked }, el.checked ? '참가자도 결과를 볼 수 있어요.' : '결과는 나만 봐요.'); break;
     case 'set-dl': { const v = ($('#mtDl') || {}).value; meetPatch({ deadline: v ? new Date(v).getTime() : null, closed: false }, v ? '마감 시각을 바꿨어요.' : '마감 날짜를 없앴어요.'); break; }
+    case 'set-theme': meetPatch({ theme: meetTheme() }, '참가자 화면을 지금 차곡 디자인으로 바꿨어요.'); break;
     case 'set-close': meetPatch({ closed: !MEET.data.poll.closed }, MEET.data.poll.closed ? '다시 응답을 받아요.' : '마감했어요. 더는 제출할 수 없어요.'); break;
     case 'del-resp': { const name = el.dataset.name, it = meetItem(MEET.id); if (!it) break;
       if (!await confirmBox({ title: `${name} 님 응답을 지울까요?`, body: '모여요 시트에서도 지워져요. 되돌릴 수 없어요.', ok: '지우기', danger: true })) break;

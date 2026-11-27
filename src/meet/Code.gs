@@ -178,6 +178,19 @@ function slotKeys_(cfg) {
   return keys;
 }
 
+/* 차곡에서 보낸 디자인(색·글꼴)만 안전하게 골라 담아요 */
+var THEME_VARS = ['--bg', '--surface', '--surface2', '--text', '--text2', '--text3', '--border', '--primary', '--primary-hover', '--on-primary', '--soft', '--soft-text', '--mark', '--deadline', '--deadline-soft', '--radius', '--radius-sm', '--btn-radius', '--shadow', '--tint1', '--tint2', '--tint3'];
+function cleanTheme_(t) {
+  if (!t || typeof t !== 'object' || !t.vars) return null;
+  var vars = {}, n = 0;
+  THEME_VARS.forEach(function (k) {
+    var v = t.vars[k];
+    if (typeof v === 'string' && /^[#\w\s().,%-]{1,160}$/.test(v)) { vars[k] = v; n++; }
+  });
+  if (!n) return null;
+  return { vars: vars, font: ['paperlogy', 'nanum', 'noto'].indexOf(t.font) >= 0 ? t.font : 'paperlogy' };
+}
+
 function isOpen_(cfg) {
   if (cfg.closed) return false;
   if (cfg.deadline && Date.now() > cfg.deadline) return false;
@@ -188,7 +201,7 @@ function publicPoll_(id, cfg) {
   return {
     id: id, title: cfg.title, note: cfg.note, dates: cfg.dates, times: cfg.times,
     interval: cfg.interval, deadline: cfg.deadline || null, highlight: !!cfg.highlight,
-    share: !!cfg.share, closed: !!cfg.closed, open: isOpen_(cfg)
+    share: !!cfg.share, closed: !!cfg.closed, open: isOpen_(cfg), theme: cfg.theme || null
   };
 }
 
@@ -209,7 +222,8 @@ function createPoll(input) {
   var cfg = {
     title: title, note: cleanText_(input.note, 300), dates: dates, times: times,
     interval: Number(input.interval) || 0, deadline: deadline,
-    highlight: !!input.highlight, share: !!input.share, closed: false, createdAt: Date.now()
+    highlight: !!input.highlight, share: !!input.share, closed: false, createdAt: Date.now(),
+    theme: cleanTheme_(input.theme)
   };
   var id = token_(8), key = token_(12);
   book_();
@@ -274,6 +288,7 @@ function adminUpdate(id, key, patch) {
     if ('deadline' in patch) p.cfg.deadline = Number(patch.deadline) || null;
     if ('title' in patch) { var t = cleanText_(patch.title, 80); if (t) p.cfg.title = t; }
     if ('note' in patch) p.cfg.note = cleanText_(patch.note, 300);
+    if ('theme' in patch) p.cfg.theme = cleanTheme_(patch.theme);
     savePoll_(p);
     return loadPoll(id, key);
   } finally { lock.releaseLock(); }

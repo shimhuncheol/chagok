@@ -38,9 +38,9 @@ python tools/smoke_test.py      # 3) 점검 (처음 한 번: pip install playwri
 커밋 전에 `python tools/build.py --check` 가 통과해야 한다 (index.html 과 소스가 같아야 함).
 
 ### 새 버전 낼 때 함께 바꿀 것
-1. `src/chagok.html` 의 `const APP_VERSION = '1.8';`
-2. `sw.js` 의 `const CACHE = 'chagok-v1.8';`
-3. `README.md` 맨 아래 `차곡 v1.8` 과 기능 목록
+1. `src/chagok.html` 의 `const APP_VERSION = '1.9';`
+2. `sw.js` 의 `const CACHE = 'chagok-v1.9';`
+3. `README.md` 맨 아래 `차곡 v1.9` 과 기능 목록
 
 ## src/chagok.html 안의 순서 (JS 큰 제목 주석 `/* ===== */` 기준)
 1. 할 일 찾기 엔진 (규칙 기반) — 날짜 표현(`11. 20.(금)`, `내일`, `다음 주 금요일`, 기간 `~`), 마감/행사 구분
@@ -87,6 +87,7 @@ python tools/smoke_test.py      # 3) 점검 (처음 한 번: pip install playwri
 - 차곡 쪽 코드: `MEET`·`renderMeet`·`meetDo`(클릭은 `data-action="meet" data-do="..."`), 서버 부르기 `meetApi(fn, ...args)` = POST `{fn,args}` (text/plain 이라 사전 요청 없음).
   서버 함수: ping · createPoll · loadPoll · summaries · adminUpdate · adminDeleteResponse.
 - 저장: `S.settings.meet = { url, list:[{id,key,title,at}] }` (백업 파일에 함께 들어감). `MEET_DEFAULT_URL` = 심훈철 계정(shimhuncheol@ssem.re.kr)의 Apps Script 프로젝트 '모여요 (차곡 일정 협의 서버)' 웹 앱 주소. 서버 코드를 고치면 그 프로젝트에 붙여 넣고 **배포 관리 → 수정 → 새 버전**으로 다시 배포(주소는 그대로). 6개월 지난 협의는 서버가 자동 정리.
+- 디자인: 모여요 화면은 차곡 CSS 변수 이름을 그대로 쓴다(기본 = 오남초 디자인, 글꼴 Paperlogy 는 jsdelivr projectnoonnu). 차곡에서 협의를 만들 때 `meetTheme()` 가 지금 디자인의 변수 값·글꼴을 `theme` 으로 보내고, 서버 `cleanTheme_` 가 허용된 변수만 저장, 참가자 화면 `applyTheme()` 이 입힌다.
 - 관리 키(key)가 있어야 결과·설정을 볼 수 있다. 참가자 링크에는 key 가 없다.
 
 ## OCR (그림 속 글자 읽기)

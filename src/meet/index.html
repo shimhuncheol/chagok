@@ -5,101 +5,110 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>모여요 · 날짜와 시간 정하기</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Schibsted+Grotesk:wght@500;700;800&display=swap" rel="stylesheet">
 <style>
-/* VOICE: 교무실 게시판처럼 차분하고 또렷하게
-   IDEA: 약 상자처럼 칸이 나뉜 '일정 협의표' 한 장
-   PICTURE: 날짜×시간 칸표 자체가 화면의 주인공
-   COLOUR/TYPE: 흰 바탕, 에메랄드 블록, 연분홍 강조, 검정 글자 / Schibsted Grotesk 숫자 + Noto Sans KR
-   LAYOUT: 위 띠(제목) → 칸표 → 아래 고정 제출 막대 */
-:root{--bg:#fff;--ink:#0b0f0d;--soft:#5b635f;--line:#dfe5e2;--em:#00a86b;--em-d:#007a4e;--em-l:#e3f6ee;--pink:#ffd6e0;--pink-s:#ff7aa2;--cell:#f4f7f5;--r:14px;color-scheme:light}
+/* 차곡과 같은 디자인: 기본은 오남초 디자인(차곡 기본). 차곡에서 만든 협의는 만든 선생님의 차곡 디자인 색·글꼴을 그대로 받아요. */
+@font-face{font-family:'Paperlogy';font-weight:400;font-display:swap;src:url(https://cdn.jsdelivr.net/gh/projectnoonnu/2408-3@1.0/Paperlogy-4Regular.woff2) format('woff2')}
+@font-face{font-family:'Paperlogy';font-weight:500;font-display:swap;src:url(https://cdn.jsdelivr.net/gh/projectnoonnu/2408-3@1.0/Paperlogy-5Medium.woff2) format('woff2')}
+@font-face{font-family:'Paperlogy';font-weight:600;font-display:swap;src:url(https://cdn.jsdelivr.net/gh/projectnoonnu/2408-3@1.0/Paperlogy-6SemiBold.woff2) format('woff2')}
+@font-face{font-family:'Paperlogy';font-weight:700;font-display:swap;src:url(https://cdn.jsdelivr.net/gh/projectnoonnu/2408-3@1.0/Paperlogy-7Bold.woff2) format('woff2')}
+@font-face{font-family:'Paperlogy';font-weight:800;font-display:swap;src:url(https://cdn.jsdelivr.net/gh/projectnoonnu/2408-3@1.0/Paperlogy-8ExtraBold.woff2) format('woff2')}
+:root{--bg:#EAEBF5;--surface:#FFFFFF;--surface2:#F4F4FB;--text:#0F112D;--text2:#33385D;--text3:#737799;--border:#DEDEF5;--primary:#0102AF;--primary-hover:#010290;--on-primary:#FFFFFF;--soft:#E6E6F7;--soft-text:#0102A1;--mark:#FDFD8F;--deadline:#E0484E;--deadline-soft:#FDECEC;
+  --radius:18px;--radius-sm:12px;--btn-radius:12px;--shadow:0 1px 2px rgba(1,2,175,0.05),0 10px 26px rgba(1,2,175,0.07);
+  --tint1:rgba(1,2,175,0.13);--tint2:rgba(1,226,9,0.14);--tint3:rgba(251,250,7,0.16);
+  --font:"Paperlogy",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic","맑은 고딕","Noto Sans KR",system-ui,sans-serif;color-scheme:light}
+html[data-font=nanum]{--font:"Nanum Gothic","Malgun Gothic",sans-serif}
+html[data-font=noto]{--font:"Noto Sans KR","Malgun Gothic",sans-serif}
 *{box-sizing:border-box;min-width:0}
 html,body{margin:0}
-body{background:var(--bg);color:var(--ink);font:16px/1.55 "Noto Sans KR",system-ui,sans-serif;overflow-x:clip;padding-bottom:96px}
-.num{font-family:"Schibsted Grotesk","Noto Sans KR",sans-serif;font-variant-numeric:tabular-nums}
-header.top{background:var(--em);color:#fff;padding:22px max(5vw,16px) 26px}
-header.top .in{max-width:1040px;margin:0 auto;display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap}
-.brand{font:900 30px/1 "Noto Sans KR",sans-serif;letter-spacing:-.02em}
-.brand b{display:inline-block;background:var(--pink);color:var(--ink);border-radius:8px;padding:2px 8px;margin-left:6px;font:800 15px/1.4 "Schibsted Grotesk",sans-serif;vertical-align:middle}
-.tag{opacity:.9;font-size:15px}
-main{max-width:1040px;margin:0 auto;padding:28px max(5vw,16px)}
-h1{font-size:clamp(26px,4vw,40px);line-height:1.12;margin:0 0 8px;text-wrap:balance;letter-spacing:-.02em}
-h2{font-size:20px;margin:0 0 12px}
-p{margin:0 0 10px}.muted{color:var(--soft)}.small{font-size:14px}
-.card{border:1.5px solid var(--line);border-radius:var(--r);padding:20px;margin:0 0 18px;background:#fff}
-.card.em{background:var(--em-l);border-color:transparent}
-.card.pink{background:var(--pink);border-color:transparent}
-.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:14px}
-label.f{display:block;font-weight:700;font-size:15px;margin-bottom:6px}
-input[type=text],input[type=date],input[type=datetime-local],select,textarea{width:100%;font:inherit;font-size:16px;padding:11px 12px;border:1.5px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);min-height:46px}
-textarea{min-height:70px;resize:vertical}
-input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible{outline:3px solid var(--pink-s);outline-offset:2px}
-.btn{font:700 16px/1 "Noto Sans KR",sans-serif;min-height:46px;padding:0 18px;border-radius:999px;border:1.5px solid var(--ink);background:#fff;color:var(--ink);cursor:pointer;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
-.btn.pri{background:var(--ink);color:#fff}
-.btn.em{background:var(--em);border-color:var(--em);color:#fff}
-.btn.sm{min-height:36px;font-size:14px;padding:0 12px}
-.btn:disabled{opacity:.4;cursor:not-allowed}
-.btn.warn{border-color:#c0264b;color:#c0264b}
+body{color:var(--text);font:15.5px/1.6 var(--font);overflow-x:clip;padding-bottom:110px;min-height:100vh;letter-spacing:-.01em;
+  background:radial-gradient(1100px 620px at -5% -12%,var(--tint1),transparent 62%),radial-gradient(900px 560px at 108% -6%,var(--tint2),transparent 60%),radial-gradient(800px 500px at 50% 112%,var(--tint3),transparent 60%),var(--bg);background-attachment:fixed}
+button,input,select,textarea{font-family:inherit;letter-spacing:inherit}
+.num{font-variant-numeric:tabular-nums}
+header.top{position:sticky;top:0;z-index:6;background:color-mix(in srgb,var(--surface) 86%,transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);padding:12px max(4vw,16px)}
+header.top .in{max-width:1000px;margin:0 auto;display:flex;align-items:center;gap:12px}
+.logo{width:40px;height:40px;border-radius:12px;background:var(--soft);display:grid;place-items:center;font-size:21px;flex:none}
+.brand{font-weight:800;font-size:18px;letter-spacing:-.03em;line-height:1.2}
+.tag{color:var(--text3);font-size:13px;line-height:1.3}
+main{max-width:1000px;margin:0 auto;padding:26px max(4vw,16px)}
+h1{font-size:clamp(26px,4vw,34px);font-weight:800;letter-spacing:-.035em;line-height:1.18;margin:0 0 6px;text-wrap:balance}
+h2{font-size:18px;font-weight:700;margin:0 0 10px;letter-spacing:-.02em}
+p{margin:0 0 10px}.muted{color:var(--text3)}.small{font-size:13.5px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px;margin:0 0 16px}
+.card.em{background:linear-gradient(180deg,var(--soft),var(--surface) 140px)}
+.card.pink{border:2px solid var(--primary)}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:12px}
+label.f{display:block;font-size:13px;color:var(--text2);font-weight:600;margin-bottom:6px}
+input[type=text],input[type=date],input[type=datetime-local],select,textarea{width:100%;font-size:16px;padding:11px 13px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface2);color:var(--text);min-height:46px;outline:none;transition:border-color .15s,box-shadow .15s}
+input:focus,select:focus,textarea:focus{border-color:var(--primary);box-shadow:0 0 0 3px color-mix(in srgb,var(--primary) 18%,transparent);background:var(--surface)}
+button:focus-visible,a:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+.btn{font-weight:700;font-size:15px;min-height:46px;padding:0 18px;border-radius:var(--btn-radius);border:1px solid var(--border);background:transparent;color:var(--text);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap;text-decoration:none;transition:filter .15s,background .15s,transform .1s}
+.btn:hover{background:var(--surface2)}.btn:active:not(:disabled){transform:scale(.97)}
+.btn.pri,.btn.em{background:var(--primary);border-color:var(--primary);color:var(--on-primary)}
+.btn.pri:hover,.btn.em:hover{background:var(--primary-hover)}
+.btn.sm{min-height:36px;font-size:13.5px;padding:0 12px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.warn{color:var(--deadline);border-color:color-mix(in srgb,var(--deadline) 40%,transparent)}
 .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
-.chip{border:1.5px solid var(--ink);background:#fff;border-radius:999px;padding:6px 12px;font:500 14px/1.2 "Noto Sans KR",sans-serif;cursor:pointer;min-height:36px}
-.chip.on{background:var(--ink);color:#fff}
-.chip.off{border-style:dashed;color:var(--soft);border-color:var(--soft);text-decoration:line-through}
-.sw{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-top:1px solid var(--line);cursor:pointer}
+.chip{border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:var(--btn-radius);padding:6px 12px;font-size:14px;font-weight:600;cursor:pointer;min-height:36px}
+.chip.on{background:var(--primary);border-color:var(--primary);color:var(--on-primary)}
+.chip.off{border-style:dashed;color:var(--text3);text-decoration:line-through;opacity:.6}
+.sw{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-top:1px solid var(--border);cursor:pointer}
 .sw:first-of-type{border-top:0}
-.sw input{appearance:none;flex:none;width:48px;height:28px;border-radius:99px;background:#cfd6d3;position:relative;cursor:pointer;margin:2px 0 0;transition:background .15s}
-.sw input::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:transform .15s}
-.sw input:checked{background:var(--em)}.sw input:checked::after{transform:translateX(20px)}
-.sw b{display:block}
-.summary{font:800 22px/1.2 "Schibsted Grotesk","Noto Sans KR",sans-serif;margin:10px 0 0}
-.badge{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:4px 12px;font-size:14px;font-weight:700;background:var(--pink);white-space:nowrap}
-.badge.em{background:var(--em-l);color:var(--em-d)}.badge.closed{background:#1a1a1a;color:#fff}
+.sw input{appearance:none;flex:none;width:44px;height:26px;border-radius:99px;background:var(--border);position:relative;cursor:pointer;margin:2px 0 0;transition:background .2s}
+.sw input::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:transform .2s}
+.sw input:checked{background:var(--primary)}.sw input:checked::after{transform:translateX(18px)}
+.sw b{display:block;font-size:14.5px}
+.summary{font-size:22px;font-weight:800;letter-spacing:-.02em;margin:0}
+.badge{display:inline-flex;align-items:center;gap:4px;border-radius:999px;padding:2px 10px;font-size:12.5px;font-weight:700;background:var(--soft);color:var(--soft-text);white-space:nowrap}
+.badge.dl{background:var(--deadline-soft);color:var(--deadline)}
+.badge.em{background:var(--surface);color:var(--soft-text);box-shadow:inset 0 0 0 1px var(--border)}.badge.closed{background:var(--text);color:var(--surface)}
 /* 칸표 */
-.tbl-wrap{overflow-x:auto;border:1.5px solid var(--line);border-radius:var(--r);background:#fff}
+.tbl-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface)}
 table.g{border-collapse:separate;border-spacing:3px;margin:6px;user-select:none;-webkit-user-select:none}
-table.g th{font-weight:700;font-size:13px;white-space:nowrap;padding:4px 6px}
-table.g thead th{position:sticky;top:0;background:#fff;line-height:1.25}
-table.g thead th button{all:unset;cursor:pointer;display:block;text-align:center;padding:2px 4px;border-radius:6px}
-table.g thead th button:hover{background:var(--em-l)}
-table.g thead th .d{font:800 15px "Schibsted Grotesk","Noto Sans KR",sans-serif}
-table.g thead th.sun .w{color:#d6334f}table.g thead th.sat .w{color:#2b62d8}
-table.g tbody th{text-align:right;position:sticky;left:0;background:#fff;z-index:1;font:700 13px "Schibsted Grotesk","Noto Sans KR",sans-serif}
-.c{display:block;width:clamp(44px,8vw,64px);height:34px;border:0;border-radius:7px;cursor:pointer;font:700 12px "Schibsted Grotesk","Noto Sans KR",sans-serif;color:var(--ink);padding:0;
-  background:color-mix(in srgb,var(--pink-s) calc(var(--h,0) * 70%),var(--cell))}
-.c.on{background:var(--em);color:#fff;box-shadow:inset 0 0 0 2px var(--em-d)}
+table.g th{font-weight:700;font-size:12.5px;white-space:nowrap;padding:3px 6px;color:var(--text2)}
+table.g thead th{position:sticky;top:0;background:var(--surface);line-height:1.25;text-align:center}
+table.g thead th button{all:unset;cursor:pointer;display:block;text-align:center;padding:2px 4px;border-radius:8px}
+table.g thead th button:hover{background:var(--soft)}
+table.g thead th .d{font-size:14px;font-weight:800;color:var(--text)}
+table.g thead th.sun .w{color:var(--deadline)}table.g thead th.sat .w{color:var(--soft-text)}
+table.g tbody th{text-align:right;position:sticky;left:0;background:var(--surface);z-index:1}
+.c{display:block;width:clamp(44px,8vw,62px);height:34px;border:0;border-radius:8px;cursor:pointer;font-size:12px;font-weight:700;color:var(--text);padding:0;
+  background:color-mix(in srgb,color-mix(in srgb,var(--mark) 65%,#E9A800) calc(var(--h,0) * 100%),var(--surface2))}
+.c.on{background:var(--primary);color:var(--on-primary);box-shadow:inset 0 0 0 2px var(--text)}
 .c.on::before{content:"✓ "}
-.res .c{background:color-mix(in srgb,var(--em) calc(var(--h,0) * 100%),var(--cell));color:var(--ink)}
-.res .c.hi{color:#fff}
-.res .c.best{box-shadow:inset 0 0 0 3px var(--ink)}
-.res .c.pick{outline:3px solid var(--pink-s);outline-offset:1px}
-.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:14px;color:var(--soft);margin:10px 2px}
-.legend i{display:inline-block;width:16px;height:16px;border-radius:4px;vertical-align:-3px;margin-right:5px}
-.best-list{list-style:none;margin:0;padding:0;counter-reset:b}
-.best-list li{display:flex;gap:12px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
+.res .c{background:color-mix(in srgb,var(--primary) calc(var(--h,0) * 100%),var(--surface2));color:var(--text)}
+.res .c.hi{color:var(--on-primary)}
+.res .c.best{box-shadow:inset 0 0 0 3px var(--text)}
+.res .c.pick{outline:3px solid var(--deadline);outline-offset:1px}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:13.5px;color:var(--text3);margin:10px 2px}
+.legend i{display:inline-block;width:15px;height:15px;border-radius:4px;vertical-align:-2px;margin-right:5px}
+.best-list{list-style:none;margin:0;padding:0}
+.best-list li{display:flex;gap:14px;align-items:center;padding:10px 0;border-top:1px solid var(--border)}
 .best-list li:first-child{border-top:0}
-.best-list .n{font:800 22px "Schibsted Grotesk","Noto Sans KR",sans-serif;min-width:3.2em;text-align:right;color:var(--em-d)}
+.best-list .n{font-size:22px;font-weight:800;min-width:3.2em;text-align:right;color:var(--soft-text)}
 .who{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:14px}
 .names{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
-.names span{background:#fff;border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-size:14px}
+.names span{background:var(--surface2);border:1px solid var(--border);border-radius:999px;padding:3px 10px;font-size:13.5px}
 .link-box{display:flex;gap:8px;margin:6px 0 14px}
-.link-box input{font:14px "Schibsted Grotesk","Noto Sans KR",sans-serif;background:#fff}
-table.list{width:100%;border-collapse:collapse;font-size:15px}
-table.list th,table.list td{padding:10px 8px;border-top:1px solid var(--line);text-align:left}
-table.list td.r{text-align:right;white-space:nowrap}
-.bar{position:fixed;left:0;right:0;bottom:0;background:var(--ink);color:#fff;padding:12px max(5vw,16px);z-index:5}
-.bar .in{max-width:1040px;margin:0 auto;display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
-.bar .btn{border-color:#fff}
-.toast{position:fixed;left:50%;bottom:110px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:12px 18px;border-radius:12px;font-size:15px;z-index:9;max-width:90vw;opacity:0;pointer-events:none;transition:opacity .2s}
+.link-box input{font-size:14px}
+table.list{width:100%;border-collapse:collapse;font-size:14.5px}
+table.list th,table.list td{padding:9px 8px;border-top:1px solid var(--border);text-align:left}
+table.list th{color:var(--text3);font-size:13px;border-top:0}
+table.list td.r,table.list th.r{text-align:right;white-space:nowrap}
+.bar{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);width:min(1000px,calc(100% - 24px));background:color-mix(in srgb,var(--surface) 92%,transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border:1px solid var(--border);border-radius:calc(var(--radius) + 2px);box-shadow:0 12px 40px rgba(20,20,60,.16);padding:10px 12px 10px 20px;z-index:5}
+.bar .in{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;font-weight:600}
+.bar b{color:var(--soft-text);font-size:18px}
+.toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);background:var(--text);color:var(--surface);padding:12px 18px;border-radius:14px;font-size:14.5px;z-index:9;max-width:90vw;opacity:0;pointer-events:none;transition:opacity .2s;font-weight:600}
 .toast.show{opacity:1}
-.loading{padding:60px 0;text-align:center;color:var(--soft)}
-.ask{border:2px solid var(--ink);border-radius:var(--r);padding:16px;margin:12px 0;background:var(--pink)}
+.loading{padding:60px 0;text-align:center;color:var(--text3)}
+.ask{border:2px solid var(--primary);border-radius:var(--radius-sm);padding:16px;margin:12px 0;background:var(--surface)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
-@media (max-width:600px){header.top{padding:16px 16px 18px}.brand{font-size:24px}.card{padding:16px}table.list .hide-m{display:none}}
+@media (max-width:600px){.card{padding:16px}table.list .hide-m{display:none}.tag{display:none}}
 </style>
 </head>
 <body>
-<header class="top"><div class="in"><div class="brand">모여요<b>일정 협의</b></div><div class="tag">날짜와 시간, 링크 하나로 함께 정해요</div></div></header>
+<header class="top"><div class="in"><div class="logo" aria-hidden="true">📆</div><div><div class="brand">일정 협의</div><div class="tag">차곡 · 날짜와 시간을 링크 하나로 함께 정해요</div></div></div></header>
 <main id="app"><div class="loading">불러오는 중…</div></main>
 <div class="toast" id="toast" role="status"></div>
 <script>const BOOT = <?!= boot ?>;</script>
@@ -138,6 +147,15 @@ function linkBox(lbl, url, note) {
   return `<label class="f">${lbl}</label>${note ? `<p class="small muted">${note}</p>` : ''}<div class="link-box"><input type="text" readonly value="${esc(url)}"><button class="btn sm pri" data-copy>복사</button><a class="btn sm" href="${esc(url)}" target="_blank">열기</a></div>`;
 }
 app.addEventListener('click', e => { const b = e.target.closest('[data-copy]'); if (b) { const i = b.parentNode.querySelector('input'); copy(i.value, i); } });
+
+/* ---------- 차곡 디자인 입히기 (협의를 만든 선생님의 차곡 디자인) ---------- */
+function applyTheme(t) {
+  if (!t || typeof t !== 'object') return;
+  const r = document.documentElement;
+  Object.entries(t.vars || {}).forEach(([k, v]) => { if (/^--[a-z0-9-]+$/.test(k) && /^[#\w\s().,%-]{1,160}$/.test(String(v))) r.style.setProperty(k, String(v)); });
+  const fonts = { nanum: 'Nanum+Gothic:wght@400;700;800', noto: 'Noto+Sans+KR:wght@400;500;700;900' };
+  if (fonts[t.font]) { r.dataset.font = t.font; const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = 'https://fonts.googleapis.com/css2?family=' + fonts[t.font] + '&display=swap'; document.head.appendChild(l); }
+}
 
 /* ---------- 1. 설문 만들기 ---------- */
 function times(start, end, iv) { const out = []; if (!iv) return out; for (let m = toMin(start); m + iv <= toMin(end); m += iv) out.push(fromMin(m)); return out; }
@@ -240,7 +258,7 @@ function status(poll, count) {
   const parts = [];
   if (!poll.open) parts.push('<span class="badge closed">마감됨</span>');
   else if (poll.deadline) { const left = poll.deadline - Date.now(), dd = Math.floor(left / 864e5), hh = Math.floor(left / 36e5);
-    parts.push(`<span class="badge">마감 ${fDT(poll.deadline)} · ${dd >= 1 ? dd + '일 남음' : hh >= 1 ? hh + '시간 남음' : '곧 마감'}</span>`); }
+    parts.push(`<span class="badge dl">마감 ${fDT(poll.deadline)} · ${dd >= 1 ? dd + '일 남음' : hh >= 1 ? hh + '시간 남음' : '곧 마감'}</span>`); }
   else parts.push('<span class="badge">마감 날짜 없음</span>');
   parts.push(`<span class="badge em">응답 <span class="num">${count}</span>명</span>`);
   return `<div class="row" style="margin:6px 0 18px">${parts.join('')}</div>`;
@@ -259,7 +277,7 @@ function viewJoin() {
   <div class="card"><label class="f" for="nm">이름</label><input type="text" id="nm" maxlength="30" placeholder="예: 4학년 1반 심훈철" value="${esc(S.name)}" autocomplete="name"></div>
   <h2>되는 시간을 모두 골라 주세요</h2>
   <p class="small muted">칸을 누르면 선택돼요. 컴퓨터에서는 끌어서 네모 모양으로 여러 칸을 한 번에 고를 수 있고, 날짜를 누르면 그날 전체가 선택돼요.</p>
-  <div class="legend"><span><i style="background:var(--em)"></i>내가 고른 시간</span>${heat ? '<span><i style="background:color-mix(in srgb,var(--pink-s) 70%,var(--cell))"></i>다른 사람이 많이 고른 시간 (숫자는 인원)</span>' : ''}</div>
+  <div class="legend"><span><i style="background:var(--primary)"></i>내가 고른 시간</span>${heat ? '<span><i style="background:color-mix(in srgb,var(--mark) 65%,#E9A800)"></i>다른 사람이 많이 고른 시간 (숫자는 인원)</span>' : ''}</div>
   <div id="gw">${gridHTML(poll, { pick: true, counts: d.counts, heat, max })}</div>
   <div class="row" style="margin-top:12px"><button class="btn sm" id="all">모두 선택</button><button class="btn sm" id="none">모두 지우기</button></div>
   <div id="ask"></div>
@@ -322,7 +340,7 @@ function resultHTML(d) {
     who = `<div class="card pink"><h2>${label(focusK, poll.interval)}</h2><div class="who"><div><b>가능 ${yes.length}명</b><div class="names">${yes.map(n => `<span>${esc(n)}</span>`).join('') || '<span>없음</span>'}</div></div><div><b>안 됨 ${no.length}명</b><div class="names">${no.map(n => `<span>${esc(n)}</span>`).join('') || '<span>없음</span>'}</div></div></div></div>`;
   }
   return `<div class="card em"><h2>가장 많이 되는 시간</h2>${tot ? `<ol class="best-list">${ranked.map(k => `<li><span class="n num">${counts[k]}명</span><span><b>${label(k, poll.interval)}</b>${counts[k] === tot ? ' <span class="badge">전원 가능</span>' : ''}<br><span class="small muted">${esc(list.filter(r => !r.slots.includes(k)).map(r => r.name).join(', ')) ? '안 되는 사람: ' + esc(list.filter(r => !r.slots.includes(k)).map(r => r.name).join(', ')) : '모두 가능'}</span></span></li>`).join('') || '<li>아직 고른 칸이 없어요.</li>'}</ol>` : '<p>아직 응답이 없어요. 링크를 보내 보세요.</p>'}</div>
-  <h2>전체 칸표</h2><div class="legend"><span><i style="background:var(--cell)"></i>0명</span><span><i style="background:color-mix(in srgb,var(--em) 50%,var(--cell))"></i>절반</span><span><i style="background:var(--em)"></i>전원</span><span><i style="background:#fff;box-shadow:inset 0 0 0 3px var(--ink)"></i>가장 많은 칸</span><span>칸을 누르면 누가 되는지 보여요</span></div>
+  <h2>전체 칸표</h2><div class="legend"><span><i style="background:var(--surface2);box-shadow:inset 0 0 0 1px var(--border)"></i>0명</span><span><i style="background:color-mix(in srgb,var(--primary) 50%,var(--surface2))"></i>절반</span><span><i style="background:var(--primary)"></i>전원</span><span><i style="background:var(--surface);box-shadow:inset 0 0 0 3px var(--text)"></i>가장 많은 칸</span><span>칸을 누르면 누가 되는지 보여요</span></div>
   <div id="rg">${gridHTML(poll, { pick: false, counts, total: tot, max, focus: focusK })}</div><div id="who" style="margin-top:14px">${who}</div>`;
 }
 function bindResult(rerender) {
@@ -374,6 +392,7 @@ async function start() {
   if (!S.id) return viewCreate();
   try {
     S.data = await api('loadPoll', S.id, S.key);
+    applyTheme(S.data.poll.theme);
     if (S.key) { if (!S.data.admin) { app.innerHTML = '<div class="card pink"><h2>관리자 링크가 맞지 않아요</h2><p>링크를 끝까지 복사했는지 확인해 주세요.</p></div>'; return; } return viewAdmin(); }
     if (P.view === 'result') return viewResult();
     viewJoin();
