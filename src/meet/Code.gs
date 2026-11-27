@@ -15,6 +15,7 @@
 var MAX_DATES = 62;
 var MAX_TIMES = 48;
 var MAX_RESPONSES = 300;
+var KEEP_DAYS = 180; // 만든 지 이만큼 지난 협의와 응답은 자동으로 지워요 (개인정보 정리)
 
 function doGet(e) {
   var t = HtmlService.createTemplateFromFile('index');
@@ -130,6 +131,27 @@ function responsesOf_(id) {
   return out;
 }
 
+/* 오래된 협의 정리 — 하루에 한 번, 새 협의를 만들 때 */
+function purgeOld_() {
+  var props = PropertiesService.getScriptProperties();
+  var last = Number(props.getProperty('LAST_PURGE')) || 0;
+  if (Date.now() - last < 864e5) return;
+  props.setProperty('LAST_PURGE', String(Date.now()));
+  var cut = Date.now() - KEEP_DAYS * 864e5, gone = {}, keep = [];
+  var ps = sheet_('polls');
+  rows_(ps).forEach(function (r) { if (Number(r[4]) && Number(r[4]) < cut) gone[String(r[0])] = 1; else keep.push(r); });
+  if (!Object.keys(gone).length) return;
+  rewrite_(ps, keep);
+  var rs = sheet_('responses');
+  rewrite_(rs, rows_(rs).filter(function (r) { return !gone[String(r[0])]; }));
+}
+
+function rewrite_(sh, rows) {
+  var last = sh.getLastRow();
+  if (last > 1) sh.getRange(2, 1, last - 1, sh.getLastColumn()).clearContent();
+  if (rows.length) sh.getRange(2, 1, rows.length, rows[0].length).setValues(rows);
+}
+
 /* ---------- 도우미 ---------- */
 
 function token_(n) {
@@ -192,6 +214,7 @@ function createPoll(input) {
   var lock = LockService.getScriptLock();
   lock.waitLock(20000);
   try {
+    try { purgeOld_(); } catch (err) { /* 정리는 실패해도 계속 */ }
     sheet_('polls').appendRow([id, key, title, JSON.stringify(cfg), String(cfg.createdAt)]);
   } finally { lock.releaseLock(); }
   return { id: id, key: key };

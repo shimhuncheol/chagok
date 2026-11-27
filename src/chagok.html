@@ -3446,35 +3446,36 @@ function renderMeet() {
   return meetListHtml();
 }
 function meetSetupHtml() {
-  const has = !!meetUrl(), mine = String(meetCfg().url || '').trim();
-  return `<div class="card mt-hero"><h2>📆 일정 협의는 이렇게 돌아가요</h2>
-    <p class="desc">협의 날짜·시간 범위를 정해 링크를 보내면, 선생님들이 로그인 없이 이름을 쓰고 되는 시간을 골라요. 여러 사람의 응답을 모아야 해서 구글의 <b>모여요 웹 앱</b>과 연결해서 써요. 차곡의 다른 메뉴는 지금처럼 인터넷 없이 그대로예요.</p>
-    <div class="mt-steps">
+  const has = !!meetUrl(), mine = String(meetCfg().url || '').trim(), dflt = !!MEET_DEFAULT_URL;
+  const steps = `<div class="mt-steps">
       <div><b>1</b><span>구글 계정으로 <a href="https://script.google.com" target="_blank" rel="noopener">script.google.com</a> → <b>새 프로젝트</b>를 만들어요.</span></div>
-      <div><b>2</b><span><b>Code.gs</b>에 아래 첫 번째 코드를 붙여 넣고, <b>＋ → HTML</b>로 이름이 <b>index</b>인 파일을 만들어 두 번째 코드를 붙여 넣어요.</span></div>
+      <div><b>2</b><span><b>Code.gs</b>에 첫 번째 코드를 붙여 넣고, <b>＋ → HTML</b>로 이름이 <b>index</b>인 파일을 만들어 두 번째 코드를 붙여 넣어요.</span></div>
       <div><b>3</b><span><b>배포 → 새 배포 → 웹 앱</b>: 실행은 <b>나</b>, 액세스 권한은 <b>모든 사용자</b>로 하고 권한을 허용해요.</span></div>
-      <div><b>4</b><span>나온 웹 앱 주소(…/exec)를 아래 칸에 붙여 넣고 <b>연결하기</b>를 눌러요.</span></div>
+      <div><b>4</b><span>나온 웹 앱 주소(…/exec)를 위 칸에 붙여 넣고 <b>연결하기</b>를 눌러요.</span></div>
     </div>
-    <div class="row" style="margin-top:14px"><button class="btn line" data-action="meet" data-do="code-gs">📋 첫 번째 코드 (Code.gs) 복사</button><button class="btn line" data-action="meet" data-do="code-html">📋 두 번째 코드 (index) 복사</button></div>
+    <div class="row" style="margin-top:14px"><button class="btn line sm" data-action="meet" data-do="code-gs">📋 첫 번째 코드 (Code.gs) 복사</button><button class="btn line sm" data-action="meet" data-do="code-html">📋 두 번째 코드 (index) 복사</button></div>`;
+  return `<div class="toolbar">${has ? '<button class="btn line sm" data-action="meet" data-do="list">← 목록</button>' : '<span></span>'}</div>
+  <div class="card"><h2>🔗 ${dflt ? '내 서버로 바꾸기 (선택)' : '일정 협의 서버 연결'}</h2>
+    <p class="desc">${dflt ? '따로 바꾸지 않아도 기본 서버로 바로 쓸 수 있어요. 응답을 내 구글 계정에만 모으고 싶을 때만 내 구글에 서버를 만들어 주소를 넣으세요.' : '일정 협의 응답을 모을 서버(모여요 웹 앱) 주소를 넣으세요. 이 주소는 이 브라우저에만 저장돼요.'}</p>
+    <div class="row"><input class="inp grow" id="mtUrl" placeholder="https://script.google.com/macros/s/…/exec" value="${esc(mine)}"><button class="btn pri" data-action="meet" data-do="url-save">연결하기</button>${dflt && mine ? '<button class="btn line" data-action="meet" data-do="url-default">기본 서버로 돌아가기</button>' : ''}</div>
+    <p class="muted small" style="margin-top:10px">지금 연결: ${has ? (mine ? '내 서버' : '기본 서버') : '없음'} · 서버를 바꾸면 전에 만든 협의는 목록에서 열리지 않을 수 있어요.</p>
   </div>
-  <div class="card"><h2>🔗 모여요 주소</h2><p class="desc">${MEET_DEFAULT_URL ? '비워 두면 기본 모여요 주소로 연결돼요. 내 구글에 따로 배포했다면 그 주소를 넣으세요.' : '배포한 웹 앱 주소를 넣으세요. 이 주소는 이 브라우저에만 저장돼요.'}</p>
-    <div class="row"><input class="inp grow" id="mtUrl" placeholder="https://script.google.com/macros/s/…/exec" value="${esc(mine)}"><button class="btn pri" data-action="meet" data-do="url-save">연결하기</button>${has && MEET.view === 'setup' ? '<button class="btn line" data-action="meet" data-do="list">목록으로</button>' : ''}</div>
-    <p class="muted small" style="margin-top:10px">응답(이름·되는 시간)은 모여요를 배포한 구글 계정의 시트 '모여요 응답 데이터'에 쌓여요. 차곡에는 내가 만든 협의 목록만 남아요.</p>
-  </div>`;
+  ${dflt ? `<details class="card"><summary><b>내 구글에 서버 만드는 방법</b> <span class="muted small">(5분)</span></summary><div style="margin-top:12px">${steps}</div></details>` : `<div class="card mt-hero"><h2>📆 서버 만드는 방법</h2>${steps}</div>`}`;
 }
 function meetListHtml() {
   const list = meetCfg().list.slice().sort((a, b) => (b.at || 0) - (a.at || 0));
   if (!MEET.listLoaded && list.length) setTimeout(meetLoadList, 0);
   let h = `<div class="toolbar"><span class="muted small">링크 하나로 여러 선생님이 되는 날짜와 시간을 모아요. 인터넷이 있어야 해요.</span>
-    <div class="row"><button class="btn line sm" data-action="meet" data-do="refresh-list">↻ 새로고침</button><button class="btn line sm" data-action="meet" data-do="import">🔗 링크로 가져오기</button><button class="btn line sm" data-action="meet" data-do="setup">⚙ 모여요 주소</button><button class="btn pri sm" data-action="meet" data-do="new">+ 새 일정 협의</button></div></div>`;
+    <div class="row"><button class="btn line sm" data-action="meet" data-do="refresh-list">↻ 새로고침</button><button class="btn line sm" data-action="meet" data-do="import">🔗 링크로 가져오기</button><button class="btn pri sm" data-action="meet" data-do="new">+ 새 일정 협의</button></div></div>`;
   if (MEET.err) h += `<div class="banner warn" style="margin:0 0 14px">⚠️ ${esc(MEET.err)}</div>`;
-  if (!list.length) return h + `<div class="card"><div class="empty"><div class="big">📆</div>아직 만든 일정 협의가 없어요.<br><span class="small">날짜·시간 범위를 정하면 보낼 링크가 바로 만들어져요.</span><div style="margin-top:14px"><button class="btn pri" data-action="meet" data-do="new">+ 첫 일정 협의 만들기</button></div></div></div>`;
+  if (!list.length) return h + `<div class="card"><div class="empty"><div class="big">📆</div>아직 만든 일정 협의가 없어요.<br><span class="small">날짜·시간 범위를 정하면 보낼 링크가 바로 만들어져요.</span><div style="margin-top:14px"><button class="btn pri" data-action="meet" data-do="new">+ 첫 일정 협의 만들기</button></div></div></div>` + `<div class="footer">받은 선생님은 로그인 없이 링크만 열어서 이름을 쓰고 되는 시간을 골라요. <button class="linkbtn" data-action="meet" data-do="setup">서버 설정</button></div>`;
+  const foot = `<div class="footer">응답(이름·되는 시간)은 일정 협의 서버의 구글 시트에 저장되고, 만든 지 6개월이 지난 협의는 자동으로 지워져요. <button class="linkbtn" data-action="meet" data-do="setup">서버 설정</button></div>`;
   return h + `<div class="mt-list">${list.map(it => {
     const s = MEET.sums[it.id];
     const meta = !s ? `<span class="muted small">${MEET.busy ? '불러오는 중…' : '응답 수를 아직 못 불러왔어요'}</span>` : s.missing ? '<span class="muted small">모여요에서 찾을 수 없어요 (주소가 바뀌었거나 지워졌어요)</span>' : mtBadges(s) + (s.first ? ` <span class="muted small">${esc(mtFD(s.first))}${s.last && s.last !== s.first ? ' ~ ' + esc(mtFD(s.last)) : ''}</span>` : '');
     return `<div class="card mt-item" data-mid="${esc(it.id)}"><div class="mt-it-t">${esc((s && s.title) || it.title)}</div><div class="mt-it-m">${meta}</div>
       <div class="row" style="margin-top:12px"><button class="btn pri sm" data-action="meet" data-do="open" data-id="${esc(it.id)}">결과 보기</button><button class="btn line sm" data-action="meet" data-do="copy" data-url="${esc(mtLinks(it.id).join)}">📋 참가자 링크</button><span class="sp"></span><button class="icon-btn" data-action="meet" data-do="forget" data-id="${esc(it.id)}" title="목록에서 빼기" aria-label="목록에서 빼기">🗑</button></div></div>`;
-  }).join('')}</div>`;
+  }).join('')}</div>` + foot;
 }
 async function meetLoadList() {
   const list = meetCfg().list; MEET.listLoaded = true; if (!list.length) return;
@@ -3639,6 +3640,7 @@ async function meetDo(el) {
       const [x] = cfg.list.splice(i, 1); MEET.view = 'list'; MEET.data = null; commit();
       toast('목록에서 뺐어요. 응답은 모여요 시트에 그대로 있어요.', () => { cfg.list.splice(i, 0, x); commit(); }); break; }
     case 'import': meetImport(); break;
+    case 'url-default': meetCfg().url = ''; MEET.view = 'list'; MEET.listLoaded = false; commit(); toast('기본 서버로 돌아갔어요.'); break;
     case 'url-save': {
       const v = ($('#mtUrl') || {}).value.trim();
       if (v && !/^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec$/.test(v.split('?')[0])) { toast('웹 앱 주소는 https://script.google.com/macros/s/…/exec 모양이에요.'); break; }
